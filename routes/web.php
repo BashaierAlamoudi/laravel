@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\http\Controllers\StudentController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/check-password', 'App\http\Controllers\StudentController@checkPassword');
+
+Route::post('/login', [StudentController::class, 'store']);
+
