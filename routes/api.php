@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\StudentController;
+use App\Http\Controllers\ComprehensiveController;
 
 
 /*
@@ -20,5 +20,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/hi', [StudentController::class, 'checkPassword']);
+
+Route::get('/ComprehensiveExam', [ComprehensiveController::class, 'fetchData']);
+Route::post('/ComprehensiveExam/edit/{id}', [ComprehensiveController::class, 'update']);
+Route::post('/ComprehensiveExam/delete/{id}', [ComprehensiveController::class, 'delete']);
+Route::post('/ComprehensiveExam/add', [ComprehensiveController::class, 'add']);
 
