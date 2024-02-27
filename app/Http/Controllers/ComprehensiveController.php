@@ -94,25 +94,17 @@ class ComprehensiveController extends Controller
 
     public function add(Request $request)
     {
-        $exam = $request->input('Exam');
-        $date = $request->input('Date');
-        $students = $request->input('students');
+        $comp = new Comp();
+        $comp->id = $request->input('ID');
+        $comp->studentName = $request->input('StudentName');
+        $comp->numAttempts = $request->input('Attempt');
+        $comp->examName = $request->input('Exam');
+        $comp->score = $request->input('Score');
+        $comp->date = $request->input('Date');
 
-        foreach ($students as $student) {
-            // Create a new student record
-            $comp = new Comp();
-
-           
-            $newStudent->id = $student['ID'];
-            $newStudent->studentName = $student['StudentName'];
-            $newStudent->numAttempts = $student['Attempt'];
-            $newStudent->examName = $exam;
-            $newStudent->score = $student['Score'];
-            $newStudent->date = $date;
-            $newStudent->save();
-        }
-
-        // Optionally, return a response, such as a success message or the created entity
-        return response()->json(['message' => 'Students added successfully'], 200);
+        // Save the new Comp instance to the database
+        $comp->save();
+        
+       
     }
 }
