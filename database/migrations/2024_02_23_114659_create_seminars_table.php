@@ -17,8 +17,10 @@ class CreateSeminarsTable extends Migration
             $table->date('date');
             $table->timestamps();
 
+            $table->unique('studentId');
+
             // Define foreign key constraint
-            $table->foreign('studentId')->references('id')->on('students')->onDelete('cascade');
+           // $table->foreign('studentId')->references('id')->on('students')->onDelete('cascade');
         });
     }
 
