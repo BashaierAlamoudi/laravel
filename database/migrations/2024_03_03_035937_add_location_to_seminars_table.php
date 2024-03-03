@@ -9,7 +9,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('seminars', function (Blueprint $table) {
-            $table->string('location')->after('date'); // Adds the 'location' column after the 'date' column
+            $table->string('location')->after('field'); // Adds the 'location' column after the 'date' column
         });
     }
 
