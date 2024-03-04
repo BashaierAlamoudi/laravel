@@ -8,8 +8,8 @@ class Seminars extends Model
 {
     public $timestamps = false;
     protected $table = 'seminars';
+    protected $primaryKey = 'studentId';
 
 
     protected $fillable = ['studentId', 'studentName', 'title', 'field', 'location','date'];
-
 }

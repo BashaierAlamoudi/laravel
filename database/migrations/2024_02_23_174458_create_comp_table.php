@@ -19,6 +19,8 @@ return new class extends Migration
             $table->integer('score');
             $table->date('date');
             $table->timestamps();
+            // $table->foreign('studentId')->references('id')->on('students')->onDelete('cascade');
+
         });
     }
 

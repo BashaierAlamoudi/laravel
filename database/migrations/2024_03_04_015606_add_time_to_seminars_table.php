@@ -9,14 +9,16 @@ return new class extends Migration
     public function up()
     {
         Schema::table('seminars', function (Blueprint $table) {
-            $table->string('location')->after('field'); // Adds the 'location' column after the 'field' column
+            // Add a 'time' column
+            $table->time('time')->nullable()->after('date');
         });
     }
 
     public function down()
     {
         Schema::table('seminars', function (Blueprint $table) {
-            $table->dropColumn('location'); // Removes the 'location' column
+            // Remove the 'time' column if the migration is rolled back
+            $table->dropColumn('time');
         });
     }
 };

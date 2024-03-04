@@ -17,6 +17,7 @@ class CreateSeminarsTable extends Migration
             $table->date('date');
             $table->timestamps();
 
+
             $table->unique('studentId');
 
             // Define foreign key constraint
