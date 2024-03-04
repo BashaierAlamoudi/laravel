@@ -11,5 +11,5 @@ class Seminars extends Model
     protected $primaryKey = 'studentId';
 
 
-    protected $fillable = ['studentId', 'studentName', 'title', 'field', 'location','date'];
+    protected $fillable = ['studentId', 'studentName', 'title', 'field', 'location','date','time'];
 }

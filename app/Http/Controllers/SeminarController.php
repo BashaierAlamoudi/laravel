@@ -20,7 +20,7 @@ class SeminarController extends Controller
             'Field' => $seminars->field,
             'Location' => $seminars->location,
             'Date' =>$seminars->date,
-           // 'Time' =>$seminars->time,
+            'Time' =>$seminars->time,
             // Add other attributes as needed
         ];
     });
@@ -38,6 +38,7 @@ class SeminarController extends Controller
         $data->field = $request->input('Field');
         $data->location = $request->input('Location');
         $data->date = $request->input('Date');
+        $data->time = $request->input('Time');
         $data ->save();
         
         
@@ -66,7 +67,7 @@ class SeminarController extends Controller
         $seminars->field = $request->input('Field');
         $seminars->location = $request->input('Location');
         $seminars->date = $request->input('Date');
-
+        $seminars->time = $request->input('Time');
         // Save the new Comp instance to the database
         $seminars->save();
         
