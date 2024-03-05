@@ -46,9 +46,8 @@ class PublicationController extends Controller
         if ($request->hasFile('pdfFile')) {
             $pdfFile = $request->file('pdfFile');
             $filename = time() . '_' . $pdfFile->getClientOriginalName();
-            $path = $pdfFile->storeAs('public/pdf', $filename); // Storing the file
-    
-            $publication = new Publication();
+            $path = $pdfFile->storeAs('pdf', $filename, 'public'); // Specifying 'public' as the disk
+            $publication = new Publications();
             // Set other publication details from the validated data
             $publication->studentId = $validatedData['StudentId'];
             $publication->studentName = $validatedData['StudentName'];
