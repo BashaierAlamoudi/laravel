@@ -9,18 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('publications', function (Blueprint $table) {
-            $table->id();
-            $table->string('studentId');
-            $table->string('studentName');
-            $table->string('supervisorName');
-            $table->string('title');
+        Schema::create('comprehensive_exam', function (Blueprint $table) {
+            $table->id('examId');
+            $table->string('examName');
             $table->string('field');
             $table->date('date');
-            $table->string('pdfPath');
-            $table->timestamps();
+
+           
         });
     }
 
@@ -29,6 +26,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('publications');
+        Schema::dropIfExists('comprehensive_exam');
+
     }
 };

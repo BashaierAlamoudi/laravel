@@ -87,7 +87,7 @@ class PublicationController extends Controller
 public function update(Request $request, $id)
 {
     // Validate the incoming request data
-    $validator = Validator::make($request->all(), [
+   /* $validator = Validator::make($request->all(), [
         'StudentName' => 'required',
         'SupervisorName' => 'required',
         'Title' => 'required',
@@ -95,10 +95,10 @@ public function update(Request $request, $id)
         'Date' => 'required|date',
 
     ]);
-
     if ($validator->fails()) {
         return response()->json($validator->errors(), 400);
-    }
+    }*/
+
 
     // Find the publication by ID
     $publication = Publications::find($id);

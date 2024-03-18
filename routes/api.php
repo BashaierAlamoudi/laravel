@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComprehensiveController;
 use App\Http\Controllers\SeminarController;
 use App\Http\Controllers\PublicationController;
+use App\Http\Controllers\StudentController;
 
 
 /*
@@ -38,3 +39,4 @@ Route::post('/publications/edit/{id}', [PublicationController::class, 'update'])
 Route::post('/publications/delete/{id}', [PublicationController::class, 'delete']);
 Route::post('/publications/add/', [PublicationController::class, 'add']);
 Route::get('/publications/pdf/{filename}', [PublicationController::class, 'getPdf']);
+Route::post('/hi',[StudentController::class,'checkPassword']);

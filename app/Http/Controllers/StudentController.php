@@ -15,6 +15,7 @@ class StudentController extends Controller {
 
         // Retrieve user from database by username
         $user = Student::where('id', $username)->first();
+        
         if (!$user) {
             return response()->json( 'User not found');
         }
@@ -23,14 +24,10 @@ class StudentController extends Controller {
         $datapas=  $user ->password;
      
         if ($datapas==$password) {
-            return response()->json('Password is correct');
+            return response()->json($user);
         } else {
             return response()->json( 'Incorrect password');
         }
     }
-    public function checkkPassword() { 
-      $cars = array('bmw','ford');
-      $response['data']=$cars;
-      return response()->json($cars);
-    }
+    
 }

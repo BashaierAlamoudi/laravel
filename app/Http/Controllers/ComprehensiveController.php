@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Comp;
+use App\Models\Comperhensive_Exam;
 
 class ComprehensiveController extends Controller
 {//Request $request
@@ -11,7 +11,7 @@ class ComprehensiveController extends Controller
   
         // Use your Eloquent model to retrieve data from the database
 
-        $data = Comp::all(); // Example: Retrieve all records
+        $data = Comperhensive_Exam::all(); // Example: Retrieve all records
         $formattedData = $data->map(function ($comprehensive) {
         return [
             'ID' => $comprehensive->id,
@@ -28,44 +28,7 @@ class ComprehensiveController extends Controller
         
     }
 
-    public function index()
-    {
-        $comprehensive = comp::all();
-        return view('comprehensives.index', compact('comprehensives'));
-    }
-
-    public function create()
-    {
-        return view('comprehensives.create');
-    }
-
-    public function store(Request $request)
-    {
-        // Validate input
-        $request->validate([
-            'studentName' => 'required',
-            'numAttempts' => 'required|integer',
-            'examName' => 'required',
-            'score' => 'required|integer',
-            'date' => 'required|date',
-        ]);
-
-        // Create new Comprehensive instance
-        Comprehensive::create($request->all());
-
-        return redirect()->route('comprehensives.index')
-            ->with('success', 'Comprehensive created successfully.');
-    }
-
-    public function show(Comprehensive $comprehensive)
-    {
-        return view('comprehensives.show', compact('comprehensive'));
-    }
-
-    public function edit(Comprehensive $comprehensive)
-    {
-        return view('comprehensives.edit', compact('comprehensive'));
-    }
+  
 
   
     public function update(Request $request, $id) {

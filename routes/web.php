@@ -23,3 +23,4 @@ Route::get('/check-password', 'App\http\Controllers\StudentController@checkPassw
 
 Route::post('/login', [StudentController::class, 'store']);
 
+

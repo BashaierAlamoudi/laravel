@@ -1,15 +1,24 @@
 <?php
 
-namespace App\Models;
+namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Seminars extends Model
+class Seminar extends Model
 {
-    public $timestamps = false;
-    protected $table = 'seminars';
-    protected $primaryKey = 'studentId';
+    protected $fillable = [
+        'title',
+        'field',
+        'date',
+        'time',
+        'studentId',
+        'location',
+        'description',
+    ];
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
 
-
-    protected $fillable = ['studentId', 'studentName', 'title', 'field', 'location','date','time'];
+    // Define any relationships with other models here
 }
