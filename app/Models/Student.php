@@ -7,26 +7,26 @@ use Illuminate\Database\Eloquent\Model;
 class Student extends Model
 {
     protected $fillable = [
-        'studentId',
-        'password',
-        'firstName',
-        'middleName',
-        'lastName',
-        'phone_number',
-        'email',
+        'loginId',
         'dateOfBirth',
         'graduationDate',
         'withdrawSemester',
-        'PostponedSemester',
+        'postponedSemester',
         'status',
         'enrollYear',
-        'department',
         'gpa',
     ];
 
-    protected $primaryKey = 'studentId';
+    protected $primaryKey = 'loginId';
     public $incrementing = false;
-    protected $keyType = 'integer';
+    protected $keyType = 'string';
+
+    // Optionally, you can define casts for specific attributes
+    protected $casts = [
+        'withdrawSemester' => 'integer',
+        'postponedSemester' => 'integer',
+        'gpa' => 'float',
+    ];
     public function publications()
     {
         return $this->hasMany(Publication::class);
@@ -46,6 +46,10 @@ class Student extends Model
     public function exams()
 {
     return $this->belongsToMany(Exam::class, 'taken_exam', 'student_id', 'exam_id');
+}
+public function user()
+{
+    return $this->belongsTo(User::class);
 }
     
 

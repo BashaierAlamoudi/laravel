@@ -11,17 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('instructor', function (Blueprint $table) {
+        Schema::create('supervisior', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('instructorId'); 
+            $table->unsignedBigInteger('supervisiorId'); 
             $table->string('firstName'); 
             $table->string('middletName'); 
             $table->string('lastName'); 
             $table->string('phone_number', 10); 
             $table->string('email')->unique();
-            
             $table->string('department');
-            $table->string('role');
+            $table->string('type');
         });
     }
 
@@ -30,7 +29,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('instructor');
+        Schema::dropIfExists('supervisior');
 
     }
 };

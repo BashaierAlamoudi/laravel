@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class coordinator extends Model
 {
     use HasFactory;
+    
     protected $fillable = [
         'coordinatorId',
-        'instructorId',
-        'password',
+        'looginId',
     ];
     public function events()
     {
@@ -21,4 +21,8 @@ class coordinator extends Model
     {
         return $this->hasMany(Request::class);
     }
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
 }

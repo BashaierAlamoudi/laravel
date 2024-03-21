@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('taken_exam', function (Blueprint $table) {
             $table->id('takenExamId');
-            $table->unsignedBigInteger('studentId');
+            $table->unsignedBigInteger('loginId');
             $table->unsignedBigInteger('examId');
             $table->integer('attempt');
             $table->integer('oralScore')->nullable();
@@ -22,9 +22,9 @@ return new class extends Migration
 
         });
         Schema::table('taken_exam',function($table){
-            $table->foreign('studentId')
+            $table->foreign('loginId')
                   ->references('id')
-                  ->on('student')
+                  ->on('user')
                   ->onDelete('cascade');
             
             $table->foreign('examId')

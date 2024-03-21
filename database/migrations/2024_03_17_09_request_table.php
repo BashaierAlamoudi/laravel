@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('request_table', function (Blueprint $table) {
             $table->id('requestId'); 
-            $table->unsignedBigInteger('studentId'); // Corrected data type
+            $table->unsignedBigInteger('loginId'); // Corrected data type
 
             $table->string('approvalStatus');
 
@@ -21,9 +21,9 @@ return new class extends Migration
             $table->date('date'); });
 
             Schema::table('request_table',function($table){
-            $table->foreign('studentId')
+            $table->foreign('loginId')
                   ->references('id')
-                  ->on('student')
+                  ->on('user')
                   ->onDelete('cascade');
             });
 

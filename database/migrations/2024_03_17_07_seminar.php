@@ -17,15 +17,15 @@ return new class extends Migration
         $table->string('field');
         $table->date('date');
         $table->time('time');
-        $table->unsignedBigInteger('studentId'); // Corrected data type
+        $table->unsignedBigInteger('loginId'); // Corrected data type
         $table->string('location');
         $table->string('description');
     });
 
     Schema::table('seminar', function ($table) {
-        $table->foreign('studentId')
+        $table->foreign('loginId')
             ->references('id')
-            ->on('student')
+            ->on('user')
             ->onDelete('cascade');
     });
 }

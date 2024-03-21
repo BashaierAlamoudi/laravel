@@ -13,22 +13,21 @@ return new class extends Migration
     {
         Schema::create('student', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('studentId')->UNIQUE();
-            $table->string('password');
-            $table->string('firstName'); 
-            $table->string('middleName'); 
-            $table->string('lastName'); 
-            $table->string('phone_number', 10); 
-            $table->string('email')->unique();
+            $table->unsignedBigInteger('loginId')->UNIQUE();
             $table->date('dateOfBirth'); 
             $table->date('graduationDate'); 
             $table->integer('withdrawSemester'); 
-            $table->integer('PostponedSemester'); 
+            $table->integer('postponedSemester'); 
             $table->string('status');
             $table->date('enrollYear');
-            $table->string('department');
             $table->float('gpa', 4, 2);
 
+        });
+        Schema::table('student', function (Blueprint $table) {
+        $table->foreign('loginId')
+                  ->references('id') // Correct the column name to match the student table
+                  ->on('user')
+                  ->onDelete('cascade');
         });
     }
 

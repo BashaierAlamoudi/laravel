@@ -14,14 +14,13 @@ return new class extends Migration
         Schema::create('coordinator', function (Blueprint $table) {
             
             $table->id('coordinatorId');
-            $table->unsignedBigInteger('instructorId');
+            $table->unsignedBigInteger('loginId');
 
-            $table->string('password');
         });
         Schema::table('coordinator',function($table){
-            $table->foreign('instructorId')
+            $table->foreign('loginId')
                   ->references('id')
-                  ->on('instructor')
+                  ->on('user')
                   ->onDelete('cascade'); 
         });
 
