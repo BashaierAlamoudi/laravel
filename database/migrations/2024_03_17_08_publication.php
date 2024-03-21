@@ -18,11 +18,11 @@ return new class extends Migration
             $table->string('field');
             $table->date('date');
             $table->string('pdfPath');
-            $table->unsignedBigInteger('loginId'); // Define the studentId column
+            $table->unsignedBigInteger('userId'); // Define the studentId column
 
         });  
         Schema::table('publication', function (Blueprint $table) {
-            $table->foreign('loginId')
+            $table->foreign('userId')
                   ->references('id') // Correct the column name to match the student table
                   ->on('user')
                   ->onDelete('cascade');

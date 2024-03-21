@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('coordinator', function (Blueprint $table) {
             
             $table->id('coordinatorId');
-            $table->unsignedBigInteger('loginId');
+            $table->unsignedBigInteger('userId');
 
         });
         Schema::table('coordinator',function($table){
-            $table->foreign('loginId')
+            $table->foreign('userId')
                   ->references('id')
                   ->on('user')
                   ->onDelete('cascade'); 

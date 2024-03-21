@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Student extends Model
 {
     protected $fillable = [
-        'loginId',
+        'userId',
         'dateOfBirth',
         'graduationDate',
         'withdrawSemester',
@@ -17,7 +17,7 @@ class Student extends Model
         'gpa',
     ];
 
-    protected $primaryKey = 'loginId';
+    protected $primaryKey = 'userId';
     public $incrementing = false;
     protected $keyType = 'string';
 

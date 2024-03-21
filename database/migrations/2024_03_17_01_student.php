@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('student', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('loginId')->UNIQUE();
+            $table->unsignedBigInteger('userId')->UNIQUE();
             $table->date('dateOfBirth'); 
             $table->date('graduationDate'); 
             $table->integer('withdrawSemester'); 
@@ -24,7 +24,7 @@ return new class extends Migration
 
         });
         Schema::table('student', function (Blueprint $table) {
-        $table->foreign('loginId')
+        $table->foreign('userId')
                   ->references('id') // Correct the column name to match the student table
                   ->on('user')
                   ->onDelete('cascade');

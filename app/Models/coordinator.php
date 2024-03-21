@@ -11,7 +11,7 @@ class coordinator extends Model
     
     protected $fillable = [
         'coordinatorId',
-        'looginId',
+        'userId',
     ];
     public function events()
     {
