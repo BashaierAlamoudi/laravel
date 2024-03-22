@@ -11,7 +11,7 @@ class Publications extends Model
 
     // Specify the table if it's not the pluralized form of the model name
     protected $table = 'publication';
-
+    protected $primaryKey = 'publicationId';
     // Attributes that are mass assignable
     protected $fillable = [
         'title', 'field', 'date', 'pdfPath', 'userId'

@@ -18,6 +18,7 @@ class PublicationController extends Controller
             $studentName = $publication->user ? $publication->user->firstName . ' ' . $publication->user->lastName : 'Unknown';
             $loginId = $publication->user ? $publication->user->loginId : 'Unknown';
             return [
+                'publicationId' => $publication->publicationId,
                 'loginId' => $loginId,
                 'Title' => $publication->title,
                 'Field' => $publication->field,
@@ -81,67 +82,62 @@ class PublicationController extends Controller
 }
 
   
-public function update(Request $request, $id)
+public function update(Request $request, $publicationId)
 {
-    // Validate the incoming request data
-   /* $validator = Validator::make($request->all(), [
-        'StudentName' => 'required',
-        'SupervisorName' => 'required',
-        'Title' => 'required',
-        'Field' => 'required',
+
+    $validated = $request->validate([
+        'Title' => 'required|string|max:255',
+        'Field' => 'required|string|max:255',
         'Date' => 'required|date',
 
     ]);
-    if ($validator->fails()) {
-        return response()->json($validator->errors(), 400);
-    }*/
 
 
-    // Find the publication by ID
-    $publication = Publications::find($id);
+    $publication = Publications::find($publicationId);
 
-    // Check if the publication exists
+
     if (!$publication) {
         return response()->json(['message' => 'Publication not found'], 404);
     }
 
-    // Update the publication with validated data
-    $publication->studentName = $request->StudentName;
-    $publication->supervisorName = $request->SupervisorName;
-    $publication->title = $request->Title;
-    $publication->field = $request->Field;
-    $publication->date = $request->Date;
-    // Include any additional fields here
 
-    // Save the updated publication
-    $publication->save();
+    $publication->title = $validated['Title'];
+    $publication->field = $validated['Field'];
+    $publication->date = $validated['Date'];
 
-    // Return the updated publication data or a success message
-    return response()->json([
-        'message' => 'Publication updated successfully',
-        'data' => $publication
-    ], 200);
+
+
+    try {
+        $publication->save();
+
+        return response()->json([
+            'message' => 'Publication updated successfully',
+            'data' => $publication
+        ], 200);
+    } catch (\Exception $e) {
+
+        return response()->json([
+            'message' => 'Failed to update the publication',
+            'error' => $e->getMessage()
+        ], 500);
+    }
 }
 
 
-public function delete($id)
+public function delete($publicationId)
 {
-    // Cast the id to an integer or use appropriate validation
-    $id = intval($id);
+    $publication = Publications::find($publicationId);
 
-    // Attempt to find the publication by ID
-    $publication = Publications::find($id);
-
-    // Check if the publication exists
     if (!$publication) {
         return response()->json(['message' => 'Publication not found'], 404);
     }
 
-    // Delete the publication
-    $publication->delete();
-
-    // Return a success message
-    return response()->json(['message' => 'Publication successfully deleted'], 200);
+    try {
+        $publication->delete();
+        return response()->json(['message' => 'Publication successfully deleted'], 200);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'Failed to delete publication', 'error' => $e->getMessage()], 500);
+    }
 }
 }
 
