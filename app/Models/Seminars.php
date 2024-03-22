@@ -1,24 +1,41 @@
 <?php
-
-namespace App\Model;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
-class Seminar extends Model
+
+class Seminars extends Model
+
 {
+    protected $table= 'seminar';
+    protected $primaryKey = 'seminarId';
+    public $timestamps = false;
     protected $fillable = [
         'title',
         'field',
         'date',
         'time',
-        'studentId',
         'location',
         'description',
+        'userId' // Keep 'loginId' in $fillable if it's a column in your table
     ];
-    public function student()
+    
+    protected $appends = ['studentName','loginId'];
+    
+    public function user()
     {
-        return $this->belongsTo(Student::class);
+        return $this->belongsTo(User::class, 'userId');
     }
-
-    // Define any relationships with other models here
+    
+    public function getLoginIdAttribute()
+    {
+        return $this->user ? $this->user->userId : null;
+    }
+    
+    public function getStudentNameAttribute()
+    {
+        
+        return $this->user ? $this->user->firstName . ' ' . $this->user->lastName : 'unknown';
+    }
 }
