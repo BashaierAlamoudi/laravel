@@ -6,56 +6,53 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use App\Models\Publications;
+use App\Models\User;
 class PublicationController extends Controller
 
 {
     public function fetchData() {
-
-        $data = Publications::all(); // Example: Retrieve all records
-        $formattedData = $data->map(function ($publications) {
-       
-        return [
-            
-            'StudentId' => $publications->studentId,
-            'StudentName' => $publications->studentName,
-            'SupervisorName' => $publications->supervisorName,
-            'Title' => $publications->title,
-            'Field' => $publications->field,
-            'Date' =>$publications->date,
-            'PdfPath' =>$publications->pdfPath,
-        ];
-    });
-    return response()->json($formattedData);
-
         
+        $publications = Publications::with('user')->get();
+
+        $formattedData = $publications->map(function ($publication) {
+            $studentName = $publication->user ? $publication->user->firstName . ' ' . $publication->user->lastName : 'Unknown';
+            $loginId = $publication->user ? $publication->user->loginId : 'Unknown';
+            return [
+                'loginId' => $loginId,
+                'Title' => $publication->title,
+                'Field' => $publication->field,
+                'Date' => $publication->date, // Ensure the date format is correct
+                'PdfPath' => $publication->pdfPath,
+                'StudentName' => $studentName,
+            ];
+        });
+    
+        return response()->json($formattedData);
     }
 
     public function add(Request $request)
     {
         // Validate the incoming request data, including the PDF file
         $validatedData = $request->validate([
-            'StudentId' => 'required|string|max:255',
-            'StudentName' => 'required|string|max:255',
-            'SupervisorName' => 'required|string|max:255',
-            'Title' => 'required|string|max:255',
-            'Field' => 'required|string|max:255',
-            'Date' => 'required|date',
+            'loginId' => 'required|exists:user,loginId',
+            'title' => 'required|string|max:255',
+            'field' => 'required|string|max:255',
+            'date' => 'required|date',
             'pdfFile' => 'required|file|mimes:pdf', // Validate the file is a PDF
         ]);
+        $user = User::where('loginId', $validatedData['loginId'])->first();
     
         if ($request->hasFile('pdfFile')) {
             $pdfFile = $request->file('pdfFile');
             $filename = time() . '_' . $pdfFile->getClientOriginalName();
             $path = $pdfFile->storeAs('pdf', $filename, 'public'); // Specifying 'public' as the disk
-            $publication = new Publications();
-            // Set other publication details from the validated data
-            $publication->studentId = $validatedData['StudentId'];
-            $publication->studentName = $validatedData['StudentName'];
-            $publication->supervisorName = $validatedData['SupervisorName'];
-            $publication->title = $validatedData['Title'];
-            $publication->field = $validatedData['Field'];
-            $publication->date = $validatedData['Date'];
-            $publication->pdfPath = Storage::url($path); // Saving the file path as 'pdfPath'
+            $publication = new Publications([
+                'userId' => $user->id,
+                'title' => $validatedData['title'],
+                'field' => $validatedData['field'],
+                'date' => $validatedData['date'],
+                'pdfPath' => Storage::url($path),
+            ]); // Saving the file path as 'pdfPath'
             $publication->save();
     
             return response()->json(['message' => 'Publication added successfully', 'data' => $publication], 201);

@@ -9,10 +9,11 @@ class User extends Model
 {
     use HasFactory;
     protected $table = 'user';
-    protected $primaryKey = 'loginId';
+   // protected $primaryKey = 'id';
         protected $fillable = [
-        'loginId', 'password', 'firstName', 'middleName', 'lastName', 'phone_number', 'email', 'department', 'role'
+        'loginId', 'password', 'firstName', 'middletName', 'lastName', 'phone_number', 'email', 'department', 'role'
     ];
+
 
     protected $hidden = [
         'password',
