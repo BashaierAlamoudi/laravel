@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('phone_number', 10); 
             $table->string('email')->unique();
             $table->string('department');
-            $table->string('type');
+
         });
     }
 

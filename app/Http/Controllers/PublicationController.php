@@ -12,23 +12,30 @@ class PublicationController extends Controller
 {
     public function fetchData() {
         
-        $publications = Publications::with('user')->get();
+        $publications = Publications::with(['user', 'supervisors'])->get();
 
-        $formattedData = $publications->map(function ($publication) {
-            $studentName = $publication->user ? $publication->user->firstName . ' ' . $publication->user->lastName : 'Unknown';
-            $loginId = $publication->user ? $publication->user->loginId : 'Unknown';
-            return [
-                'publicationId' => $publication->publicationId,
-                'loginId' => $loginId,
-                'Title' => $publication->title,
-                'Field' => $publication->field,
-                'Date' => $publication->date, // Ensure the date format is correct
-                'PdfPath' => $publication->pdfPath,
-                'StudentName' => $studentName,
-            ];
-        });
-    
-        return response()->json($formattedData);
+    // Format the fetched data
+    $formattedData = $publications->map(function ($publication) {
+        // Get student name from user relation
+        $studentName = $publication->user ? $publication->user->firstName . ' ' . $publication->user->lastName : 'Unknown';
+        
+        // Get supervisor name from supervisors relation
+        $supervisorName = $publication->supervisors ? $publication->supervisors->first()->firstName . ' ' . $publication->supervisors->first()->lastName : 'Unknown';
+
+        return [
+            'publicationId' => $publication->publicationId,
+            'loginId' => $publication->user ? $publication->user->loginId : 'Unknown',
+            'Title' => $publication->title,
+            'Field' => $publication->field,
+            'Date' => $publication->date, // Ensure the date format is correct
+            'PdfPath' => $publication->pdfPath,
+            'StudentName' => $studentName,
+            'SupervisorName' => $supervisorName,
+        ];
+    });
+
+    // Return the formatted data as JSON response
+    return response()->json($formattedData);
     }
 
     public function add(Request $request)

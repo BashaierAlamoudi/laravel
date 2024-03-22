@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('supervise', function (Blueprint $table) {
             $table->id('superviseId');
-            $table->unsignedBigInteger('loginId');
+            $table->unsignedBigInteger('userId');
             $table->unsignedBigInteger('supervisiorId');
             $table->string('type');
 
             
         });
         Schema::table('supervise',function($table){ 
-            $table->foreign('loginId')
+            $table->foreign('userId')
                   ->references('id')
                   ->on('user')
                   ->onDelete('cascade');
