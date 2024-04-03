@@ -6,11 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class event_model extends Model
-{
+{    
+    protected $table = 'event_table';
+    protected $primaryKey = 'eventId';
     use HasFactory;
+    
+   public $timestamps = false;
     protected $fillable = [
         'title',
-        'eventDate',
+        'eventStart',
+        'eventEnd',
         'description',
     ];
     public function coordinator()
@@ -18,3 +23,4 @@ class event_model extends Model
         return $this->belongsTo(Coordinator::class);
     }
 }
+

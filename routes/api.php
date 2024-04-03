@@ -7,6 +7,7 @@ use App\Http\Controllers\SeminarController;
 use App\Http\Controllers\PublicationController;
 //use App\Http\Controllers\StudentController;
 use App\Http\Controllers\loginController;
+use App\Http\Controllers\EventController;
 
 
 /*
@@ -41,3 +42,10 @@ Route::post('/publications/delete/{id}', [PublicationController::class, 'delete'
 Route::post('/publications/add/', [PublicationController::class, 'add']);
 Route::get('/publications/pdf/{filename}', [PublicationController::class, 'getPdf']);
 Route::post('/login',[loginController::class,'login']);
+ 
+
+
+Route::get('/event',[EventController::class,'index1']);
+Route::post('/event/add/', [EventController::class, 'add']);
+Route::post('/event/delete/{id}', [EventController::class, 'delete']);
+Route::post('/event/edit/{id}', [EventController::class, 'update']);
