@@ -29,6 +29,8 @@ Route::get('/ComprehensiveExam', [ComprehensiveController::class, 'fetchData']);
 Route::post('/ComprehensiveExam/edit/{id}', [ComprehensiveController::class, 'update']);
 Route::post('/ComprehensiveExam/delete/{id}', [ComprehensiveController::class, 'delete']);
 Route::post('/ComprehensiveExam/add/', [ComprehensiveController::class, 'add']);
+Route::get('/ComprehensiveExam/students', [ComprehensiveController::class, 'getStudentsByYearAndSeason']);
+Route::post('/ComprehensiveExam/assign-grades', [ComprehensiveController::class, 'assignGrades']);
 
 Route::get('/Seminars', [SeminarController::class, 'fetchData']);
 Route::post('/Seminars/edit/{id}', [SeminarController::class, 'update']);

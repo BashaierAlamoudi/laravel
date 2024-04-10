@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id('takenExamId');
             $table->unsignedBigInteger('loginId');
             $table->unsignedBigInteger('examId');
-            $table->integer('attempt');
             $table->integer('oralScore')->nullable();
-            $table->integer('writtenScore')->nullable();             
+            $table->integer('writtenScore')->nullable();     
+            $table->timestamps();        
    
 
         });

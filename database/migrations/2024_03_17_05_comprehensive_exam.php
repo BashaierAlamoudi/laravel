@@ -10,14 +10,15 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
+    {    
         Schema::create('comprehensive_exam', function (Blueprint $table) {
+            
             $table->id('examId');
-            $table->string('examName');
-            $table->string('field');
-            $table->date('date');
-
-           
+            $table->string('year');
+            $table->string('season');
+            $table->string('description');
+            $table->string('pdfPath');
+            $table->timestamps();
         });
     }
 

@@ -26,4 +26,8 @@ class User extends Model
     {
         return $this->hasMany(Coordinator::class);
     }
+    public function takenExams()
+{
+    return $this->hasMany(Taken_Exam::class, 'loginId', 'loginId');
+}
 }

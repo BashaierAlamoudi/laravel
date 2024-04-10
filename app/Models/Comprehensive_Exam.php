@@ -1,21 +1,23 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\Taken_Exam;
 class Comprehensive_Exam extends Model
 {
     use HasFactory;
+    protected $table = 'comprehensive_exam'; 
+    public $timestamps = false;
+    protected $primaryKey = 'examId';
     protected $fillable = [
-        'examName',
-        'field',
-        'date',
+        'year', 'season', 'description', 'pdfPath',
     ];
-    public function students()
-{
-    return $this->belongsToMany(Student::class, 'taken_exam', 'exam_id', 'student_id');
-}
 
+
+    public function takenExams()
+    {
+        return $this->hasMany(Taken_Exam::class, 'examId', 'examId');
+    }
 }
