@@ -10,6 +10,7 @@ class Taken_Exam extends Model
     use HasFactory;
 
     protected $table = 'taken_exam';
+    protected $primaryKey = 'takenExamId';
     public $timestamps = false;
     protected $fillable = [
         'loginId', 'examId', 'oralScore', 'writtenScore',

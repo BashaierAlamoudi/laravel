@@ -20,6 +20,7 @@ class ComprehensiveController extends Controller
                 ->get()
                 ->map(function ($takenExam) {
                     return [
+                        'TakenExamId'=> $takenExam->takenExamId,
                         'loginId' => $takenExam->user->loginId,
                         'StudentName' => $takenExam->user->firstName . ' ' . $takenExam->user->lastName,
                         'Year' => $takenExam->comprehensiveExam->year,
@@ -37,28 +38,60 @@ class ComprehensiveController extends Controller
   
 
   
-    public function update(Request $request, $id) {
-        // Find the data by ID
-        $data = Comp::find($id);
+public function update(Request $request, $TakenExamId)
+{
 
-        $data->studentName = $request->input('StudentName');
-        $data->score = $request->input('Score');
-        $data->examName = $request->input('Exam');
-        $data->numAttempts = $request->input('Attempt');
-        $data->date = $request->input('Date');
-        $data ->save();
-        // Return a response indicating success
-        return response()->json($data);
+    $validated = $request->validate([
+        'WrittenScore' => 'nullable|integer',
+        'OralScore' => 'nullable|integer',
 
+    ]);
+
+
+    $TakenExam = Taken_Exam::find($TakenExamId);
+
+
+    if (!$TakenExam) {
+        return response()->json(['message' => 'Taken Exam not found'], 404);
     }
+
+
+    $TakenExam->writtenScore = $validated['WrittenScore'];
+    $TakenExam->oralScore = $validated['OralScore'];
+
+
+
+    try {
+        $TakenExam->save();
+
+        return response()->json([
+            'message' => 'TakenExam updated ',
+            'data' => $TakenExam
+        ], 200);
+    } catch (\Exception $e) {
+
+        return response()->json([
+            'message' => 'Failed to update the TakenExam',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
     
 
-    public function delete($id)
+    public function delete($TakenExamId)
     {
-        $id = intval($id);
-        // Delete Comprehensive instance
-        $data = Comp::find($id);
-        $data->delete();
+        $TakenExam = Taken_Exam::find($TakenExamId);
+    
+        if (!$TakenExam) {
+            return response()->json(['message' => 'TakenExam not found '. $TakenExamId], 404);
+        }
+    
+        try {
+            $TakenExam->delete();
+            return response()->json(['message' => 'TakenExam successfully deleted'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to delete TakenExam', 'error' => $e->getMessage()], 500);
+        }
     }
 
         public function add(Request $request)
