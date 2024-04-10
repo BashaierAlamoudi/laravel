@@ -42,8 +42,8 @@ public function update(Request $request, $TakenExamId)
 {
 
     $validated = $request->validate([
-        'WrittenScore' => 'nullable|integer',
-        'OralScore' => 'nullable|integer',
+        'WrittenScore' => 'nullable|numeric',
+        'OralScore' => 'nullable|numeric',
 
     ]);
 
@@ -198,13 +198,17 @@ public function update(Request $request, $TakenExamId)
         foreach ($validated['grades'] as $grade) {
            
                 // Now use $userId to update the record in 'taken_exam'
-                DB::table('taken_exam')
-                    ->where('loginId',$grade['userId']) // 'loginId' in 'taken_exam' matches 'id' in 'user'
-                    ->where('examId', $grade['examId'])
-                    ->update([
-                        'writtenScore' => $grade['writtenScore'],
-                        'oralScore' => $grade['oralScore'],
-                    ]);
+                $affectedRows = DB::table('taken_exam')
+                ->where('loginId', $grade['userId'])
+                ->where('examId', $grade['examId'])
+                ->update([
+                    'writtenScore' => $grade['writtenScore'],
+                    'oralScore' => $grade['oralScore'],
+                ]);
+
+if ($affectedRows == 0) {
+    \Log::warning("No rows updated for user ID: {$grade['userId']} and exam ID: {$grade['examId']}");
+}
         }
     
         return response()->json(['message' => 'Grades successfully assigned']);
