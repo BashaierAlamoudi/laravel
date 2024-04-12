@@ -39,6 +39,7 @@ Route::post('/Seminars/delete/{id}', [SeminarController::class, 'delete']);
 Route::post('/Seminars/add/', [SeminarController::class, 'add']);
 
 Route::get('/publications', [PublicationController::class, 'fetchData']);
+Route::get('/studentpublications/{id}', [PublicationController::class, 'fetchStudentData']);
 Route::post('/publications/edit/{id}', [PublicationController::class, 'update']);
 Route::post('/publications/delete/{id}', [PublicationController::class, 'delete']);
 Route::post('/publications/add/', [PublicationController::class, 'add']);

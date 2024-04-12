@@ -41,6 +41,39 @@ class PublicationController extends Controller
     return response()->json($formattedData);
     }
 
+    public function fetchStudentData($loginId) {
+        // Filter publications where the associated user's loginId matches the provided ID
+        $publications = Publications::with(['user', 'supervisors'])
+                                    ->whereHas('user', function($query) use ($loginId) {
+                                        $query->where('loginId', $loginId);
+                                    })
+                                    ->get();
+    
+        // Format the fetched data
+        $formattedData = $publications->map(function ($publication) {
+            $studentName = $publication->user ? $publication->user->firstName . ' ' . $publication->user->lastName : 'Unknown';
+            $supervisorName = $publication->supervisors ? $publication->supervisors->first()->firstName . ' ' . $publication->supervisors->first()->lastName : 'Unknown';
+    
+            return [
+                'publicationId' => $publication->publicationId,
+                'loginId' => $publication->user ? $publication->user->loginId : 'Unknown',
+                'Title' => $publication->title,
+                'Field' => $publication->field,
+                'PublicationType' => $publication->publicationType,
+                'VenueName' => $publication->venueName,
+                'DOI' => $publication->doi,
+                'Date' => $publication->date,
+                'PdfPath' => $publication->pdfPath,
+                'StudentName' => $studentName,
+                'SupervisorName' => $supervisorName,
+            ];
+        });
+    
+        // Return the formatted data as JSON response
+        return response()->json($formattedData);
+    }
+    
+
     public function add(Request $request)
     {
         // Validate the incoming request data, including the PDF file 
