@@ -47,7 +47,7 @@ Route::get('/publications/pdf/{filename}', [PublicationController::class, 'getPd
 
 
 
-Route::get('/event',[EventController::class,'index1']);
+Route::get('/event',[EventController::class,'fetchData']);
 Route::post('/event/add/', [EventController::class, 'add']);
 Route::post('/event/delete/{id}', [EventController::class, 'delete']);
 Route::post('/event/edit/{id}', [EventController::class, 'update']);

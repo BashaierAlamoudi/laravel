@@ -32,10 +32,10 @@ class EventController extends Controller
         // Return the events as a response (you can customize this)
         return response()->json($formattedEvents);
     }
-    public function index1()
+    public function fetchData()
     {
         // Fetch all events from the Event model
-        $events = event_model::all();  // Fixed variable name and removed unnecessary foreach loop
+        $events = event_model::all();  
         $formattedEvents =array();
 
         foreach ($events as $event) {
@@ -44,6 +44,9 @@ class EventController extends Controller
                 'title' => $event->title,
                 'start' => $event->eventStart,
                 'end'=>$event->eventEnd,
+                'extendedProps' => [
+                    'description' => $event->description ?? 'No description available'
+                ]
             ];
         }
 
