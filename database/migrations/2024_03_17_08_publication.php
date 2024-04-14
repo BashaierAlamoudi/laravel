@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('publication', function (Blueprint $table) {
             $table->id('publicationId');   
+            $table->unsignedBigInteger('userId'); // Define the studentId column
+
             $table->string('title');
             $table->string('field');
             $table->date('date');
             $table->string('pdfPath');
-            $table->unsignedBigInteger('userId'); // Define the studentId column
 
         });  
         Schema::table('publication', function (Blueprint $table) {

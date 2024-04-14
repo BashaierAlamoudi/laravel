@@ -11,7 +11,7 @@ class SeminarController extends Controller
     $seminars = Seminars::with(['user'])->get(); // Retrieve all seminars with user relationship loaded
 
     $formattedData = $seminars->map(function ($seminar) {
-    $studentName = $seminar->user ? $seminar->user->firstName . ' ' . $seminar->user->lastName : 'Unknown';
+   // $studentName = $seminar->user ? $seminar->user->firstName . ' ' . $seminar->user->lastName : 'Unknown';
     return [
             'seminarId' => $seminar->seminarId,
             'loginId' => $seminar->user?$seminar ->user->loginId:'unkown', // Access loginId through accessor method
