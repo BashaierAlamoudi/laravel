@@ -17,6 +17,9 @@ return new class extends Migration
 
             $table->string('title');
             $table->string('field');
+            $table->string('publicationType');
+            $table->string('venueName');
+            $table->string('doi');
             $table->date('date');
             $table->string('pdfPath');
 

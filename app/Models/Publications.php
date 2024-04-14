@@ -11,12 +11,12 @@ class Publications extends Model
 {
     use HasFactory;
 
-    // Specify the table if it's not the pluralized form of the model name
  protected $table = 'publication';
  protected $primaryKey = 'publicationId';
  // Attributes that are mass assignable
  protected $fillable = [
-     'title', 'field', 'date', 'pdfPath', 'userId'
+     'title', 'field','publicationType','venueName', 'doi','date', 'pdfPath', 'userId'  
+
  ];
  public $timestamps = false;
 

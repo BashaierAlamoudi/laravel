@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComprehensiveController;
 use App\Http\Controllers\SeminarController;
 use App\Http\Controllers\PublicationController;
-//use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\loginController;
 use App\Http\Controllers\EventController;
 
@@ -30,6 +30,8 @@ Route::get('/ComprehensiveExam', [ComprehensiveController::class, 'fetchData']);
 Route::post('/ComprehensiveExam/edit/{id}', [ComprehensiveController::class, 'update']);
 Route::post('/ComprehensiveExam/delete/{id}', [ComprehensiveController::class, 'delete']);
 Route::post('/ComprehensiveExam/add/', [ComprehensiveController::class, 'add']);
+Route::get('/ComprehensiveExam/students', [ComprehensiveController::class, 'getStudentsByYearAndSeason']);
+Route::post('/ComprehensiveExam/assign-grades', [ComprehensiveController::class, 'assignGrades']);
 
 Route::get('/Seminars', [SeminarController::class, 'fetchData']);
 Route::post('/Seminars/edit/{id}', [SeminarController::class, 'update']);
@@ -37,15 +39,20 @@ Route::post('/Seminars/delete/{id}', [SeminarController::class, 'delete']);
 Route::post('/Seminars/add/', [SeminarController::class, 'add']);
 
 Route::get('/publications', [PublicationController::class, 'fetchData']);
+Route::get('/studentpublications/{id}', [PublicationController::class, 'fetchStudentData']);
 Route::post('/publications/edit/{id}', [PublicationController::class, 'update']);
 Route::post('/publications/delete/{id}', [PublicationController::class, 'delete']);
 Route::post('/publications/add/', [PublicationController::class, 'add']);
 Route::get('/publications/pdf/{filename}', [PublicationController::class, 'getPdf']);
-Route::post('/login',[loginController::class,'login']);
- 
 
 
-Route::get('/event',[EventController::class,'index1']);
+
+Route::get('/event',[EventController::class,'fetchData']);
 Route::post('/event/add/', [EventController::class, 'add']);
 Route::post('/event/delete/{id}', [EventController::class, 'delete']);
 Route::post('/event/edit/{id}', [EventController::class, 'update']);
+
+    Route::get('/fetch-user-data', [StudentController::class, 'fetchUserData']);
+    Route::post('/login',[loginController::class,'login']);
+
+
