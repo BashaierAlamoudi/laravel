@@ -12,10 +12,9 @@ class Taken_exam extends Model
 {
     use HasFactory;
 
-    protected $table = 'taken_exam'; // Define the table name
-
-    protected $primaryKey = 'takenExamId'; // Define the primary key name
-
+    protected $table = 'taken_exam';
+    protected $primaryKey = 'takenExamId';
+    public $timestamps = false;
     protected $fillable = [
         'userId',
         'examId',
