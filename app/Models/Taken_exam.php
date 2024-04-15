@@ -4,11 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
-use App\Models\Comperhensive_Exam;
-
-
-class Taken_exam extends Model
+use App\Models\Comprehensive_Exam;
+class Taken_Exam extends Model
 {
     use HasFactory;
 
@@ -16,22 +13,17 @@ class Taken_exam extends Model
     protected $primaryKey = 'takenExamId';
     public $timestamps = false;
     protected $fillable = [
-        'userId',
-        'examId',
-        'attempt',
-        'oralScore',
-        'writtenScore'
-    ]; 
+        'loginId', 'examId', 'oralScore', 'writtenScore',
+    ];
+
+
+    public function comprehensiveExam()
+    {
+        return $this->belongsTo(Comprehensive_Exam::class, 'examId', 'examId');
+    }
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'userId');
+        return $this->belongsTo(User::class, 'loginId', 'id');
     }
-
-    public function exam()
-    {
-        return $this->belongsTo(ComprehensiveExam::class, 'examId');
-    }
-    
-
 }

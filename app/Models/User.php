@@ -12,6 +12,7 @@ class User extends Model implements Authenticatable
     use HasFactory, AuthenticableTrait;
 
     protected $table = 'user';
+    //protected $primaryKey= 'loginId';
 
     protected $fillable = [
         'loginId', 'password', 'firstName', 'middletName', 'lastName', 'phone_number', 'email', 'department', 'role'
@@ -34,4 +35,5 @@ class User extends Model implements Authenticatable
 {
     return $this->hasMany(Taken_Exam::class, 'loginId', 'loginId');
 }
+
 }

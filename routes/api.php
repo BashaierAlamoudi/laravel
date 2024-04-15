@@ -52,7 +52,7 @@ Route::post('/event/add/', [EventController::class, 'add']);
 Route::post('/event/delete/{id}', [EventController::class, 'delete']);
 Route::post('/event/edit/{id}', [EventController::class, 'update']);
 
-    Route::get('/fetch-user-data', [StudentController::class, 'fetchUserData']);
-    Route::post('/login',[loginController::class,'login']);
+Route::get('/fetch-user-data/{id}', [StudentController::class, 'fetchUserData']);
+Route::post('/login',[loginController::class,'login']);
 
 

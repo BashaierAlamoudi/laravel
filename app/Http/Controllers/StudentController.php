@@ -32,19 +32,16 @@ class StudentController extends Controller {
         }
     }
 
-    public function fetchUserData(Request $request): \Illuminate\Http\JsonResponse
+    public function fetchUserData($id): \Illuminate\Http\JsonResponse
     {
-        // Retrieve the authenticated user ID from the session
-        $userId = 3;
-
-        if ($userId) {
-            // Retrieve the user from the database using the user ID
-            $user = User::find($userId);
+        
+           $user = User::where('loginId', $id)->first();
 
             if ($user) {
-                // Assuming you have a relationship defined in your User model to retrieve student data
-                $student = $user->students()->first(); // Assuming user has one student relationship
-
+                // Retrieve the associated student data using the relationship method
+                $student = $user->students()->first();
+    
+                // Prepare the user data
                 $userData = [
                     'loginId' => $user->loginId,
                     'firstName' => $user->firstName,
@@ -52,7 +49,8 @@ class StudentController extends Controller {
                     'lastName' => $user->lastName,
                     'email' => $user->email,
                 ];
-
+    
+                // If student data is available, merge it with the user data
                 if ($student) {
                     $studentData = [
                         'graduationDate' => $student->graduationDate,
@@ -62,21 +60,18 @@ class StudentController extends Controller {
                         'enrollYear' => $student->enrollYear,
                         'gpa' => $student->gpa,
                     ];
-
+    
                     // Merge student data with user data
                     $userData = array_merge($userData, $studentData);
                 }
-
+    
                 // Log fetched data to the console
-
+    
                 return response()->json($userData);
             }
-        }
-
-        // If user is not authenticated or data fetching fails, return error response
-        return response()->json(['error' => 'User not authenticated'], 401);
+        
+    
+        // If user is not found or data fetching fails, return error response
+        return response()->json(['error' => 'User not found'], 404);
     }
-
-
-
-}
+    }
