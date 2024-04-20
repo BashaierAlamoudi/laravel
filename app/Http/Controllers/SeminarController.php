@@ -165,6 +165,6 @@ class SeminarController extends Controller
        // return response($seminar);
     
         // Save the seminar object to the database
-            $seminar->save();
+        $seminar->save();
         
     }}
