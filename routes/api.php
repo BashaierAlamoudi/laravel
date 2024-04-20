@@ -33,7 +33,10 @@ Route::post('/ComprehensiveExam/add/', [ComprehensiveController::class, 'add']);
 Route::get('/ComprehensiveExam/students', [ComprehensiveController::class, 'getStudentsByYearAndSeason']);
 Route::post('/ComprehensiveExam/assign-grades', [ComprehensiveController::class, 'assignGrades']);
 
-Route::get('/Seminars', [SeminarController::class, 'fetchData']);
+Route::get('/StudentSeminars', [SeminarController::class, 'fetchStudentsData']);
+Route::get('/PublicSeminars', [SeminarController::class, 'fetchData']);
+Route::get('/UserSeminars/{id}', [SeminarController::class, 'fetchUserData']);
+
 Route::post('/Seminars/edit/{id}', [SeminarController::class, 'update']);
 Route::post('/Seminars/delete/{id}', [SeminarController::class, 'delete']);
 Route::post('/Seminars/add/', [SeminarController::class, 'add']);

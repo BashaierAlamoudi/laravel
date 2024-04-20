@@ -7,15 +7,20 @@ use App\Models\User;
 
 
 class SeminarController extends Controller
-{public function fetchData() {
-    $seminars = Seminars::with(['user'])->get(); // Retrieve all seminars with user relationship loaded
+{
+    
+    
+    public function fetchStudentsData() {
+        
+    $seminars = Seminars::where('type', 'student')
+        ->with(['user'])
+        ->get();
 
     $formattedData = $seminars->map(function ($seminar) {
-   // $studentName = $seminar->user ? $seminar->user->firstName . ' ' . $seminar->user->lastName : 'Unknown';
-    return [
+        return [
             'seminarId' => $seminar->seminarId,
-            'loginId' => $seminar->user?$seminar ->user->loginId:'unkown', // Access loginId through accessor method
-            'StudentName' =>$seminar->studentName,
+            'loginId' => $seminar->user ? $seminar->user->loginId : 'unknown',
+            'Name' => $seminar->Name,
             'Title' => $seminar->title,
             'Field' => $seminar->field,
             'Location' => $seminar->location,
@@ -23,18 +28,74 @@ class SeminarController extends Controller
             'Time' => $seminar->time,
         ];
     });
+
     return response()->json($formattedData);
 }
 
+    
+    public function fetchData() {
+        $seminars = Seminars::all();
+
+        $formattedData = $seminars->map(function ($seminar) {
+            return [
+                'seminarId' => $seminar->seminarId,
+                'Name' => $seminar->Name, // Access 'Name' property directly from $seminar
+                'Title' => $seminar->title,
+                'Field' => $seminar->field,
+                'Location' => $seminar->location,
+                'Date' => $seminar->date,
+                'Time' => $seminar->time,
+            ];
+        });
+        
+        return response()->json($formattedData);}
+
+
+        public function fetchUserData($userId) {
+            // Check if the user is a student
+            $seminars = Seminars::where('type', 'student')
+        ->with(['user'])
+        ->get();
+        
+        $formattedData = [];
+        $user = User::where('loginId', $userId)->first();
+
+
+                foreach ($seminars as $seminar) {
+                    if ($seminar->userId == $user->id) {
+                        $formattedData[] = [
+                            'seminarId' => $seminar->seminarId,
+                            'Name' => $seminar->Name,
+                            'Title' => $seminar->title,
+                            'Field' => $seminar->field,
+                            'Location' => $seminar->location,
+                            'Date' => $seminar->date,
+                            'Time' => $seminar->time,
+                        ];
+                    }
+                }
+            
+                return response()->json($formattedData);
+            }
+            
+        
+        
+        
+            
+
+        
+
 
   
-    public function update(Request $request, $SeminarId) {
+    
+        public function update(Request $request, $SeminarId) {
         $validated = $request->validate([
             'Title' => 'required|string|max:255',
             'Field' => 'required|string|max:255',
             'Date' => 'required|date',
             'Location'=> 'required',
             'Time'=> 'required',
+            'Name'=>'required',
     
         ]);
 
@@ -65,34 +126,45 @@ class SeminarController extends Controller
         $data->delete();
    
     }
-
     public function add(Request $request)
-
     {
         //return response()->json($request);
         $validatedData = $request->validate([
-            'loginId' => 'required|exists:user,loginId',
-            'Title' => 'required|string|max:255',
-            'Field' => 'required|string|max:255',
+            'loginId' => 'nullable', // Make loginId nullable
+            'Title' => 'nullable|string|max:255',
+            'Field' => 'nullable|string|max:255',
             'Date' => 'required|date',
-            'Location'=>'required|string',
-            'Time'=>'required'
+            'Location' => 'required|string',
+            'Time' => 'required',
+            'Type' => 'required|string', // Assuming 'Type' is passed in the request
+            'Name' =>'nullable|string',
         ]);
-       // return response()->json($validatedData);
-        $user = User::where('loginId', $validatedData['loginId'])->first();
-       // if ($user){
-            $seminar = new Seminars([
-                'userId'=>$user->id,
-                'title'=>$validatedData['Title'],
-                'field'=>$validatedData['Field'],
-                'date'=>$validatedData['Date'],
-                'time'=>$validatedData['Time'],
-                'location'=>$validatedData['Location'],
-            ]);
+    
+        // Fetch the user ID based on the provided loginId
+        $userId = null;
+        if ($validatedData['loginId']) {
+            $user = User::where('loginId', $validatedData['loginId'])->first();
+            if ($user) {
+                $userId = $user->id;
+                // If Name is not provided, set it to the user's full name
+                $validatedData['Name'] =  ($user->firstName . ' ' . $user->lastName);
+            }
+        } 
+    
+        // Create a new seminar object
+        $seminar = new Seminars([
+            'userId' => $userId,
+            'Name' => $validatedData['Name'],
+            'title' => $validatedData['Title'],
+            'field' => $validatedData['Field'],
+            'date' => $validatedData['Date'],
+            'time' => $validatedData['Time'],
+            'location' => $validatedData['Location'],
+            'type' => $validatedData['Type'],
+        ]);
+       // return response($seminar);
+    
+        // Save the seminar object to the database
             $seminar->save();
-            return response()->json(['message' => 'seminar added successfully', 'data' => $seminar], 201);
-       // } else {
-           // return response()->json(['message' => 'PDF file is required'], 422);
-       // }
         
     }}

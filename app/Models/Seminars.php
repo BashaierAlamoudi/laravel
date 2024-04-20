@@ -1,14 +1,13 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 
-
 class Seminars extends Model
-
 {
-    protected $table= 'seminar';
+    protected $table = 'seminar';
     protected $primaryKey = 'seminarId';
     public $timestamps = false;
     protected $fillable = [
@@ -17,25 +16,26 @@ class Seminars extends Model
         'date',
         'time',
         'location',
-        'description',
-        'userId' // Keep 'loginId' in $fillable if it's a column in your table
+        'type', 
+        'userId',
+        'Name' 
     ];
     
-    protected $appends = ['studentName','loginId'];
+    // Remove the $appends property since it's not needed for userId
     
     public function user()
     {
-        return $this->belongsTo(User::class, 'userId');
+        // Adjust the relationship based on the 'type' being 'student'
+        if ($this->type === 'student') {
+            return $this->belongsTo(User::class, 'userId');
+        } else {
+            // If the type is not 'student', return a dummy relationship object
+            return $this->belongsTo(User::class, 'userId')->whereNull('id');
+        }
     }
     
-    public function getLoginIdAttribute()
+    public function getNameAttribute($value)
     {
-        return $this->user ? $this->user->userId : null;
-    }
-    
-    public function getStudentNameAttribute()
-    {
-        
-        return $this->user ? $this->user->firstName . ' ' . $this->user->lastName : 'unknown';
+        return ucfirst($value); // Example: capitalize the name
     }
 }
