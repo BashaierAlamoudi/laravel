@@ -44,9 +44,11 @@ Route::get('/StudentSeminars', [SeminarController::class, 'fetchStudentsData']);
 Route::get('/PublicSeminars', [SeminarController::class, 'fetchData']);
 Route::get('/UserSeminars/{id}', [SeminarController::class, 'fetchUserData']);
 
+
 Route::post('/Seminars/edit/{id}', [SeminarController::class, 'update']);
 Route::post('/Seminars/delete/{id}', [SeminarController::class, 'delete']);
 Route::post('/Seminars/add/', [SeminarController::class, 'add']);
+
 
 Route::get('/publications', [PublicationController::class, 'fetchData']);
 Route::get('/studentpublications/{id}', [PublicationController::class, 'fetchStudentData']);
@@ -63,6 +65,8 @@ Route::post('/event/delete/{id}', [EventController::class, 'delete']);
 Route::post('/event/edit/{id}', [EventController::class, 'update']);
 
 Route::get('/fetch-user-data/{id}', [StudentController::class, 'fetchUserData']);
+
+Route::get('/statusData', [StudentController::class, 'statusData']);
 Route::post('/login',[loginController::class,'login']);
 
 

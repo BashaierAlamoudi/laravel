@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\User;
+use App\Models\Publications;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
@@ -74,4 +75,27 @@ class StudentController extends Controller {
         // If user is not found or data fetching fails, return error response
         return response()->json(['error' => 'User not found'], 404);
     }
+
+    public function statusData(){
+        // Count active students
+        $activeCount = Student::where('status', 'active')->count();
+
+        // Count inactive students
+        $inactiveCount = Student::where('status', 'inactive')->count();
+        $totalNum = Student::count();
+        $enrolledYear = Student::whereRaw('YEAR(enrollYear) = ?', [2024])->count();
+        $publication = Publications::all();
+
+        // Return counts as JSON response
+        return response()->json([
+            'active_count' => $activeCount,
+            'inactive_count' => $inactiveCount,
+            'totalNum'=>$totalNum,
+            'enrolledYear' =>$enrolledYear,
+            'publications'=> $publication
+
+        ]);
     }
+
+    }
+    
