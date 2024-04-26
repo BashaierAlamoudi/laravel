@@ -13,7 +13,7 @@ class Taken_Exam extends Model
     protected $primaryKey = 'takenExamId';
     public $timestamps = false;
     protected $fillable = [
-        'loginId', 'examId', 'oralScore', 'writtenScore',
+        'userId', 'examId', 'oralScore', 'writtenScore',
     ];
 
 
