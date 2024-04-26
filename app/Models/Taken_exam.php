@@ -13,7 +13,7 @@ class Taken_Exam extends Model
     protected $primaryKey = 'takenExamId';
     public $timestamps = false;
     protected $fillable = [
-        'loginId', 'examId', 'oralScore', 'writtenScore',
+        'userId', 'examId', 'oralScore', 'writtenScore',
     ];
 
 
@@ -24,6 +24,6 @@ class Taken_Exam extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'loginId', 'id');
+        return $this->belongsTo(User::class, 'userId', 'id');
     }
 }

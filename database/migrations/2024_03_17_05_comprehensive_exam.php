@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('comprehensive_exam', function (Blueprint $table) {
             
             $table->id('examId');
+            $table->string('examName');
             $table->string('year');
             $table->string('season');
-            $table->string('description');
-            $table->string('pdfPath');
+            $table->string('written_description')->nullable();
+            $table->string('oral_description')->nullable();
+            $table->string('written_pdfPath')->nullable();
+            $table->string('oral_pdfPath')->nullable();
             $table->timestamps();
         });
     }

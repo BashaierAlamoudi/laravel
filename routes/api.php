@@ -32,6 +32,13 @@ Route::post('/ComprehensiveExam/delete/{id}', [ComprehensiveController::class, '
 Route::post('/ComprehensiveExam/add/', [ComprehensiveController::class, 'add']);
 Route::get('/ComprehensiveExam/students', [ComprehensiveController::class, 'getStudentsByYearAndSeason']);
 Route::post('/ComprehensiveExam/assign-grades', [ComprehensiveController::class, 'assignGrades']);
+Route::post('/ComprehensiveExam/new', [ComprehensiveController::class, 'addNewExam']);
+Route::get('ComprehensiveExam/exams', [ComprehensiveController::class, 'index']);
+Route::post('/ComprehensiveExam/assign-students-to-exam', [ComprehensiveController::class, 'assignStudentsToExam']);
+Route::post('/ComprehensiveExam/notify-exam', [ComprehensiveController::class, 'notifyExam']);
+Route::post('/ComprehensiveExam/get-students-with-grades', [ComprehensiveController::class, 'getStudentsWithGrades']);
+
+Route::get('/exams/{examId}/students', [ComprehensiveController::class, 'getStudentsByExamId']);
 
 Route::get('/StudentSeminars', [SeminarController::class, 'fetchStudentsData']);
 Route::get('/PublicSeminars', [SeminarController::class, 'fetchData']);

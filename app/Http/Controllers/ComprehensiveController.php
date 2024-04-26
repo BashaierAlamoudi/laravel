@@ -23,18 +23,30 @@ class ComprehensiveController extends Controller
                         'TakenExamId'=> $takenExam->takenExamId,
                         'loginId' => $takenExam->user->loginId,
                         'StudentName' => $takenExam->user->firstName . ' ' . $takenExam->user->lastName,
+                        'ExamName'=> $takenExam->comprehensiveExam->examName,
                         'Year' => $takenExam->comprehensiveExam->year,
                         'Season' => $takenExam->comprehensiveExam->season,
                         'OralScore' => $takenExam->oralScore,
                         'WrittenScore' => $takenExam->writtenScore,
-                        'PdfPath' => $takenExam->comprehensiveExam->pdfPath,
+                       
                     ];
                 });
 
     return response()->json($data);
 }
 
+public function addNewExam(Request $request)
+{
+    $validated = $request->validate([
+        'examName' => 'required|string|max:255',
+        'year' => 'required|string|max:255',
+        'season' => 'required|string|max:255'
+    ]);
 
+    $exam = Comprehensive_Exam::create($validated);
+
+    return response()->json(['message' => 'New exam added successfully', 'examId' => $exam->id], 201);
+}
   
 
   
@@ -76,7 +88,11 @@ public function update(Request $request, $TakenExamId)
         ], 500);
     }
 }
-    
+public function index()
+{
+    $exams = Comprehensive_Exam::all(['examId as id', 'examName as name']);  // Assuming 'name' is the field for exam names
+    return response()->json($exams);
+}   
 
     public function delete($TakenExamId)
     {
@@ -94,52 +110,90 @@ public function update(Request $request, $TakenExamId)
         }
     }
 
-        public function add(Request $request)
+
+        
+        public function assignStudentsToExam(Request $request)
         {
-            // Validate the incoming request data
-            $validated = $request->validate([
-                'year' => 'required|string',
-                'season' => 'required|string',
-                'description' => 'required|string',
-                'pdfFile' => 'required|file|mimes:pdf',
-                'studentIds' => 'required|array',
-                'studentIds.*' => 'required|exists:user,loginId', 
-            ]);
-    
-            // Handle the PDF file upload
+
+                $request->validate([
+                    'examId' => 'required|exists:comprehensive_exam,examId',
+                    'studentIds' => 'required|array',
+                    'studentIds.*' => 'required|exists:user,loginId'
+                ]);
+            
+                // Process the data
+                $examId = $request->input('examId');
+                $studentIds = $request->input('studentIds');
+            
+                try {
+                    foreach ($studentIds as $loginId) {
+                        $user = User::where('loginId', $loginId)->firstOrFail();
+                        Taken_Exam::create([
+                            'userId' => $user->id, // assuming User model's id is what should be linked
+                            'examId' => $examId,
+                            'oralScore' => null,  // Assuming scores are not assigned yet
+                            'writtenScore' => null
+                        ]);}
+                    return response()->json(['message' => 'Students successfully assigned to exam']);
+                } catch (\Exception $e) {
+                    return response()->json(['error' => $e->getMessage()], 400);
+                }
+            }
+            public function notifyExam(Request $request)
+            {
+                $validated = $request->validate([
+                    'examId' => 'required|exists:comprehensive_exam,examId',
+                    'examType' => 'required|in:Written,Oral',
+                    'description' => 'required|string',
+                    'pdfFile' => 'required|file|mimes:pdf'
+                ]);
+                            // Handle the PDF file upload
             if ($request->hasFile('pdfFile')) {
                 $pdfFile = $request->file('pdfFile');
                 $filename = time() . '_' . $pdfFile->getClientOriginalName();
                 $path = $pdfFile->storeAs('pdf', $filename, 'public'); 
             }
-    
-            // Create the comprehensive exam entry
-            $exam = Comprehensive_Exam::create([
-                'year' => $validated['year'],
-                'season' => $validated['season'],
-                'description' => $validated['description'],
-                'pdfPath' => Storage::url($path),
-            ]);
-
-            foreach ($validated['studentIds'] as $loginId) {
-                $user = User::where('loginId', $loginId)->first();
-    
-                if ($user) {
-                    Taken_Exam::create([
-                        'loginId' => $user->id,
-                        'examId' => $exam->examId,
-                    ]);
+            
+                try {
+                    $exam = Comprehensive_Exam::findOrFail($validated['examId']);
+                    //$path = $request->file('pdfFile')->store('public/pdfs');
+            
+                    if ($validated['examType'] === 'Written') {
+                        $exam->written_description = $validated['description'];
+                        $exam->written_pdfPath = Storage::url($path);
+                    } else {
+                        $exam->oral_description = $validated['description'];
+                        $exam->oral_pdfPath = Storage::url($path);
+                    }
+            
+                    $exam->save();
+            
+                    return response()->json(['message' => 'Exam notification updated successfully.'], 200);
+                } catch (\Exception $e) {
+                    return response()->json(['error' => $e->getMessage()], 500);
                 }
             }
-    
-            // Return a response indicating success
-            return response()->json([
-                'message' => 'Comprehensive exam and student entries added successfully',
-                'examId' => $exam->id,
-            ], 201); // HTTP 201 Created
-        }
-       
-    
+            // In ComprehensiveController.php
+
+public function getStudentsByExamId($examId)
+{
+    $students = Taken_Exam::where('examId', $examId)
+                          ->with('user') // assuming there's a relationship defined in Taken_Exam model
+                          ->get()
+                          ->map(function ($takenExam) {
+                              return [
+                                  'userId' => $takenExam->user->id,
+                                  'loginId' => $takenExam->user->loginId,
+                                  'name' => $takenExam->user->firstName . ' ' . $takenExam->user->lastName
+                              ];
+                          });
+
+    if($students->isEmpty()) {
+        return response()->json(['message' => 'No students found for this exam'], 404);
+    }
+
+    return response()->json($students);
+}
 
     public function getPdf($filename)
     {
@@ -185,33 +239,65 @@ public function update(Request $request, $TakenExamId)
         return response()->json(['students' => $students, 'examId' => $exam->examId]);
     }
     
-    public function assignGrades(Request $request) {
-        $validated = $request->validate([
-            'grades' => 'required|array',
-            'grades.*.userId' => 'required|exists:user,id',
-            'grades.*.loginId' => 'required|exists:user,loginId', // Assuming 'loginId' is a column in 'user'
-            'grades.*.examId' => 'required|exists:comprehensive_exam,examId',
-            'grades.*.writtenScore' => 'nullable|numeric',
-            'grades.*.oralScore' => 'nullable|numeric',
-        ]);
-    
-        foreach ($validated['grades'] as $grade) {
-           
-                // Now use $userId to update the record in 'taken_exam'
-                $affectedRows = DB::table('taken_exam')
-                ->where('loginId', $grade['userId'])
-                ->where('examId', $grade['examId'])
-                ->update([
-                    'writtenScore' => $grade['writtenScore'],
-                    'oralScore' => $grade['oralScore'],
-                ]);
 
-if ($affectedRows == 0) {
-    \Log::warning("No rows updated for user ID: {$grade['userId']} and exam ID: {$grade['examId']}");
-}
+
+public function assignGrades(Request $request) {
+    try {
+        $validated = $request->validate([
+            'examId' => 'required|exists:comprehensive_exam,examId',
+            'grades' => 'required|array',
+            'grades.*.studentId' => 'required|exists:user,id',
+            'grades.*.score' => 'required|numeric|min:0|max:100'
+        ]);
+
+        foreach ($validated['grades'] as $grade) {
+            $takenExam = Taken_Exam::where('userId', $grade['studentId'])
+                                   ->where('examId', $validated['examId'])
+                                   ->firstOrFail();
+            if ($request->input('examType') === 'Written') {
+                $takenExam->writtenScore = $grade['score'];
+            } else {
+                $takenExam->oralScore = $grade['score'];
+            }
+            $takenExam->save();
         }
-    
+
         return response()->json(['message' => 'Grades successfully assigned']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+}
+
+
+public function getStudentsWithGrades(Request $request) {
+    $validated = $request->validate([
+        'examId' => 'required|exists:comprehensive_exam,examId',
+        'examType' => 'required|in:Written,Oral'
+    ]);
+
+    $examId = $validated['examId'];
+    $examType = $validated['examType'];
+
+    $studentsQuery = DB::table('taken_exam')
+        ->join('user', 'taken_exam.userId', '=', 'user.id')
+        ->where('taken_exam.examId', $examId);
+
+    if ($examType === 'Written') {
+        $students = $studentsQuery
+            ->select('user.id as studentId', DB::raw("concat(user.firstName, ' ', user.lastName) as name"), 'taken_exam.writtenScore as score')
+            ->get();
+    } else { // Oral exam
+        $students = $studentsQuery
+            ->where('taken_exam.writtenScore', '>=', 60)
+            ->select('user.id as studentId', DB::raw("concat(user.firstName, ' ', user.lastName) as name"), 'taken_exam.oralScore as score')
+            ->get();
+    }
+
+
+    return response()->json(['students' => $students]);
+}
+
+
+
     
 }

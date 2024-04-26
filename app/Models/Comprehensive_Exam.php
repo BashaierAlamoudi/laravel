@@ -13,7 +13,7 @@ class Comprehensive_Exam extends Model
     protected $primaryKey = 'examId'; // Define the primary key name
 
     protected $fillable = [
-        'year', 'season', 'description', 'pdfPath',
+        'examName','year', 'season', 'written_description','oral_description','written_pdfPath','oral_pdfPath', 
     ];
 
     public function takenExams()
