@@ -24,7 +24,7 @@ class Taken_Exam extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'loginId', 'id');
+        return $this->belongsTo(User::class, 'userId', 'id');
     }
 }
 
