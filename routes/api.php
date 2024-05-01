@@ -8,8 +8,8 @@ use App\Http\Controllers\PublicationController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\loginController;
 use App\Http\Controllers\EventController;
-
-
+use App\Http\Controllers\RuleController;
+use App\Http\Controllers\NewStudentController; 
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -70,3 +70,10 @@ Route::get('/statusData', [StudentController::class, 'statusData']);
 Route::post('/login',[loginController::class,'login']);
 
 
+
+Route::get('/Rule',[RuleController::class,'fetchData']);
+
+Route::post('/signup',[NewStudentController::class,'add']);
+Route::get('/Database-panel/newstudent',[NewStudentController::class,'fetchData']);
+Route::post('/Database-panel/accept/{id}', [NewStudentController::class, 'acceptStudent']);
+Route::post('/Database-panel/reject/{id}', [NewStudentController::class, 'delete']);

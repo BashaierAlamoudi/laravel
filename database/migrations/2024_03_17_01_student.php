@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('student', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('userId')->UNIQUE();
-            $table->date('dateOfBirth'); 
+            $table->unsignedBigInteger('userId')->unique();
             $table->date('graduationDate'); 
             $table->integer('withdrawSemester'); 
             $table->integer('postponedSemester'); 

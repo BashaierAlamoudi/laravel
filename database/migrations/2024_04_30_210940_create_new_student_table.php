@@ -10,20 +10,22 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('user', function (Blueprint $table) {
-
+    { 
+        Schema::create('new_students', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('loginId')->unique();
+            $table->timestamps();
+            $table->unsignedBigInteger('userId')->unique();
+            $table->unsignedBigInteger('nationalId')->unique();
             $table->string('password');
             $table->string('firstName'); 
             $table->string('middletName'); 
             $table->string('lastName'); 
-            $table->string('phone_number', 10)->unique();
+            $table->string('phone_number', 10); 
             $table->string('email')->unique();
             $table->string('department');
-            $table->string('role');  
-            $table->timestamps(); 
+            $table->string('section');
+            $table->date('enrollYear');
+            $table->float('gpa', 4, 2);
         });
     }
 
@@ -32,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExits('user');
+        Schema::dropIfExists('new_students');
     }
 };
