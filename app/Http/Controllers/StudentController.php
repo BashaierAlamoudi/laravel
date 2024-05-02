@@ -41,7 +41,11 @@ class StudentController extends Controller {
         if ($user) {
             // Retrieve the associated student data using the relationship method
             $student = $user->students()->first();
-            $studentArray = $student->toArray();
+            if ($student !== null) {
+                $studentArray = $student->toArray();
+            } else {
+                $studentArray = [];
+            }
             // return json_encode($student);
             // Prepare the user data
             $userData = [

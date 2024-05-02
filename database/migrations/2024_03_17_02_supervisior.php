@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('supervisior', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('supervisiorId'); 
-            $table->string('firstName'); 
-            $table->string('middletName'); 
-            $table->string('lastName'); 
-            $table->string('phone_number', 10); 
-            $table->string('email')->unique();
+            $table->unsignedBigInteger('supervisiorId');
+            $table->string('firstName');
+            $table->string('middletName');
+            $table->string('lastName');
+            $table->string('phone_number', 10);
+            $table->string('email',191)->unique();
             $table->string('department');
 
         });
