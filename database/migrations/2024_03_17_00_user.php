@@ -16,14 +16,14 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('loginId')->unique();
             $table->string('password');
-            $table->string('firstName'); 
-            $table->string('middletName'); 
-            $table->string('lastName'); 
+            $table->string('firstName');
+            $table->string('middletName');
+            $table->string('lastName');
             $table->string('phone_number', 10)->unique();
-            $table->string('email')->unique();
+            $table->string('email',191)->unique();
             $table->string('department');
-            $table->string('role');  
-            $table->timestamps(); 
+            $table->string('role');
+            $table->timestamps();
         });
     }
 
