@@ -12,6 +12,7 @@ class PreventRequestsDuringMaintenance extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'api/*', // Allow requests to the API endpoints
+        'admin/*', // Allow requests to the admin panel
     ];
 }

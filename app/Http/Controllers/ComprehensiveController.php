@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\File;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ExamNotification;
+use App\Mail\Test;
+use App\Mail\PassExam;
+
 
 class ComprehensiveController extends Controller
 {//Request $request
@@ -139,34 +144,58 @@ public function index()
                     return response()->json(['error' => $e->getMessage()], 400);
                 }
             }
+
             public function notifyExam(Request $request)
             {
                 $validated = $request->validate([
                     'examId' => 'required|exists:comprehensive_exam,examId',
                     'examType' => 'required|in:Written,Oral',
                     'description' => 'required|string',
+                    'subject' => 'required|string',
                     'pdfFile' => 'required|file|mimes:pdf'
                 ]);
-                            // Handle the PDF file upload
-            if ($request->hasFile('pdfFile')) {
-                $pdfFile = $request->file('pdfFile');
-                $filename = time() . '_' . $pdfFile->getClientOriginalName();
-                $path = $pdfFile->storeAs('pdf', $filename, 'public'); 
-            }
             
+                // Handle the PDF file upload
+                if ($request->hasFile('pdfFile')) {
+                    $pdfFile = $request->file('pdfFile');
+                    $filename = time() . '_' . $pdfFile->getClientOriginalName();
+                    $path = $pdfFile->storeAs('pdf', $filename, 'public'); 
+                }
+                
                 try {
                     $exam = Comprehensive_Exam::findOrFail($validated['examId']);
-                    //$path = $request->file('pdfFile')->store('public/pdfs');
             
                     if ($validated['examType'] === 'Written') {
                         $exam->written_description = $validated['description'];
                         $exam->written_pdfPath = Storage::url($path);
-                    } else {
+                        // Fetch all users who are assigned to this written exam
+                        $users = Taken_Exam::where('examId', $exam->examId)->with('user')->get()->pluck('user')->filter();
+                    } elseif ($validated['examType'] === 'Oral') {
                         $exam->oral_description = $validated['description'];
                         $exam->oral_pdfPath = Storage::url($path);
+                        $users = Taken_Exam::where('examId', $exam->examId)
+                                           ->where('writtenScore', '>=', 60)
+                                           ->with('user')
+                                           ->get()
+                                           ->pluck('user')
+                                           ->filter(function ($user) {
+                                               return !is_null($user);
+                                           });
                     }
             
                     $exam->save();
+                    
+                    // Data to be sent in the email
+                    $data = [
+                        'subject' => $validated['subject'],
+                        'description' => $validated['description'],
+                        'path' => $path,
+                    ];
+            
+                    // Send an email to each user
+                    foreach ($users as $user) {
+                        Mail::to($user->email)->send(new ExamNotification($data));
+                    }
             
                     return response()->json(['message' => 'Exam notification updated successfully.'], 200);
                 } catch (\Exception $e) {
@@ -267,7 +296,54 @@ public function assignGrades(Request $request) {
         return response()->json(['error' => $e->getMessage()], 500);
     }
 }
+public function assignGradesAndNotify(Request $request){
+    try {
+        $validated = $request->validate([
+            'examId' => 'required|exists:comprehensive_exam,examId',
+            'grades' => 'required|array',
+            'grades.*.studentId' => 'required|exists:user,id',
+            'grades.*.score' => 'required|numeric|min:0|max:100',
+            'emailSubject' => 'sometimes|required',
+            'emailDescription' => 'sometimes|required'
+        ]);
 
+        foreach ($validated['grades'] as $grade) {
+            $takenExam = Taken_Exam::where('userId', $grade['studentId'])
+                                   ->where('examId', $validated['examId'])
+                                   ->firstOrFail();
+
+                $takenExam->oralScore = $grade['score'];
+                $takenExam->save();
+        }
+
+     
+        // Fetch students who scored more than 60
+        $studentsToNotify = Taken_Exam::where('examId', $validated['examId'])
+                                      ->where('oralScore', '>=', 60)
+                                      ->with('user') // Make sure there is a relation `user` in Taken_Exam
+                                      ->get();
+
+        // Send email to each student
+        foreach ($studentsToNotify as $student) {
+            if ($student->user) {
+                $data = [
+                    'subject' => $validated['emailSubject'] ?? 'Congratulations on Passing!',
+                    'description' => $validated['emailDescription'] ?? 'You have passed the oral examination.',
+                    'firstName' => $student->user->firstName,
+                    'lastName' => $student->user->lastName,
+                    'fullName' => $student->user->firstName . ' ' . $student->user->lastName,
+                    'email' => $student->user->email
+                ];
+
+                Mail::to($student->user->email)->send(new PassExam($data));
+            }
+        }
+
+        return response()->json(['message' => 'Grades successfully assigned and notifications sent']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
 
 public function getStudentsWithGrades(Request $request) {
     $validated = $request->validate([
@@ -284,12 +360,12 @@ public function getStudentsWithGrades(Request $request) {
 
     if ($examType === 'Written') {
         $students = $studentsQuery
-            ->select('user.id as studentId', DB::raw("concat(user.firstName, ' ', user.lastName) as name"), 'taken_exam.writtenScore as score')
+            ->select('user.id as studentId','user.loginId as loginId', DB::raw("concat(user.firstName, ' ', user.lastName) as name"), 'taken_exam.writtenScore as score')
             ->get();
     } else { // Oral exam
         $students = $studentsQuery
             ->where('taken_exam.writtenScore', '>=', 60)
-            ->select('user.id as studentId', DB::raw("concat(user.firstName, ' ', user.lastName) as name"), 'taken_exam.oralScore as score')
+            ->select('user.id as studentId','user.loginId as loginId', DB::raw("concat(user.firstName, ' ', user.lastName) as name"), 'taken_exam.oralScore as score')
             ->get();
     }
 

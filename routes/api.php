@@ -10,6 +10,7 @@ use App\Http\Controllers\loginController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\RuleController;
 use App\Http\Controllers\NewStudentController; 
+use App\Http\Controllers\emailcontroller;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -25,13 +26,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 */
-
+//assign-grades-and-notify
 Route::get('/ComprehensiveExam', [ComprehensiveController::class, 'fetchData']);
 Route::post('/ComprehensiveExam/edit/{id}', [ComprehensiveController::class, 'update']);
 Route::post('/ComprehensiveExam/delete/{id}', [ComprehensiveController::class, 'delete']);
 Route::post('/ComprehensiveExam/add/', [ComprehensiveController::class, 'add']);
 Route::get('/ComprehensiveExam/students', [ComprehensiveController::class, 'getStudentsByYearAndSeason']);
 Route::post('/ComprehensiveExam/assign-grades', [ComprehensiveController::class, 'assignGrades']);
+Route::post('/ComprehensiveExam/assign-grades-and-notify', [ComprehensiveController::class, 'assignGradesAndNotify']);
 Route::post('/ComprehensiveExam/new', [ComprehensiveController::class, 'addNewExam']);
 Route::get('ComprehensiveExam/exams', [ComprehensiveController::class, 'index']);
 Route::post('/ComprehensiveExam/assign-students-to-exam', [ComprehensiveController::class, 'assignStudentsToExam']);
@@ -78,3 +80,7 @@ Route::post('/signup',[NewStudentController::class,'add']);
 Route::get('/Database-panel/newstudent',[NewStudentController::class,'fetchData']);
 Route::post('/Database-panel/accept/{id}', [NewStudentController::class, 'acceptStudent']);
 Route::post('/Database-panel/reject/{id}', [NewStudentController::class, 'delete']);
+
+
+
+Route::get('/sendMail', [emailcontroller::class, 'sendTestEmail']);
