@@ -20,6 +20,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SuperviseTableSeeder::class,
         ]);
+        $this->call([
+            StudentsTableSeeder::class,
+        ]);
+       
        
     }
 }

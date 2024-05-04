@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('student', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('userId')->unique();
-            $table->date('graduationDate'); 
+            $table->string('graduationDate'); 
             $table->integer('withdrawSemester'); 
             $table->integer('postponedSemester'); 
             $table->string('status');
-            $table->date('enrollYear');
+            $table->string('enrollYear');
             $table->float('gpa', 4, 2);
 
         });
@@ -30,6 +30,7 @@ return new class extends Migration
         });
     }
 
+    
     /**
      * Reverse the migrations.
      */

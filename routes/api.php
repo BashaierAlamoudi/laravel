@@ -39,14 +39,11 @@ Route::get('ComprehensiveExam/exams', [ComprehensiveController::class, 'index'])
 Route::post('/ComprehensiveExam/assign-students-to-exam', [ComprehensiveController::class, 'assignStudentsToExam']);
 Route::post('/ComprehensiveExam/notify-exam', [ComprehensiveController::class, 'notifyExam']);
 Route::post('/ComprehensiveExam/get-students-with-grades', [ComprehensiveController::class, 'getStudentsWithGrades']);
-
 Route::get('/exams/{examId}/students', [ComprehensiveController::class, 'getStudentsByExamId']);
 
 Route::get('/StudentSeminars', [SeminarController::class, 'fetchStudentsData']);
 Route::get('/PublicSeminars', [SeminarController::class, 'fetchData']);
 Route::get('/UserSeminars/{id}', [SeminarController::class, 'fetchUserData']);
-
-
 Route::post('/Seminars/edit/{id}', [SeminarController::class, 'update']);
 Route::post('/Seminars/delete/{id}', [SeminarController::class, 'delete']);
 Route::post('/Seminars/add/', [SeminarController::class, 'add']);
@@ -68,8 +65,9 @@ Route::post('/event/edit/{id}', [EventController::class, 'update']);
 
 Route::get('/fetch-user-data/{id}', [StudentController::class, 'fetchUserData']);
 Route::post('/update-user-data', [StudentController::class, 'updateUserdata']);
-
 Route::get('/statusData', [StudentController::class, 'statusData']);
+Route::get('/student/student-filter', [StudentController::class, 'fetchWithFilter']);
+Route::delete('/students/delete', [StudentController::class, 'delete']);
 Route::post('/login',[loginController::class,'login']);
 
 

@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\Publications;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-
+use Illuminate\Support\Facades\DB;
 
 class StudentController extends Controller {
 
@@ -79,7 +79,61 @@ class StudentController extends Controller {
         // If user is not found or data fetching fails, return error response
         return response()->json(['error' => 'User not found'], 404);
     }
+    public function fetchWithFilter(Request $request)
+    {
+        $query = DB::table('user')
+        ->join('student', 'user.id', '=', 'student.userId')
+        ->select(
+            'user.id',
+            'user.loginId', 
+            'user.firstName', 
+            'user.lastName', 
+            'user.department', 
+            'user.email', 
+            'user.phone_number'
+        );
 
+// Apply filters only if they are present and not empty
+if ($request->filled('gender')) {
+$query->where('gender', $request->gender);
+}
+if ($request->filled('department')) {
+    $query->where('department', $request->department);
+}
+
+    // Start checking for either enroll year or expected graduation
+    if ($request->boolean('enrollYear') || $request->boolean('graduationDate')) {
+        $query->where(function ($query) use ($request) {
+            if ($request->boolean('enrollYear')) {
+                $query->orWhere('enrollYear', date('Y'));
+            }
+            if ($request->boolean('graduationDate')) {
+                $query->orWhere('graduationDate',  date('Y'));
+            }
+        });
+    }
+
+if ($request->filled('status')) {
+$query->where('status', $request->status);
+}
+
+return response()->json($query->get());
+    }
+    public function delete(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (empty($ids)) {
+            return response()->json(['message' => 'No IDs provided'], 400);
+        }
+    
+        try {
+            // Assuming User is your user model and it is related to Student
+            User::destroy($ids);
+            return response()->json(['message' => 'Users and their associated students deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Deletion failed', 'error' => $e->getMessage()], 500);
+        }
+    }
     public function statusData(){
         // Count active students
         $activeCount = Student::where('status', 'active')->count();
