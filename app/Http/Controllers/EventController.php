@@ -85,6 +85,12 @@ public function delete($eventId)
         return response()->json(['message' => 'Failed to delete event', 'error' => $e->getMessage()], 500);
     }
 }
+public function addSeminar(event_model $event)
+    {
+        $event->save();
+
+        return response()->json(['message' => 'Event instance saved successfully']);
+    }
 
 
 

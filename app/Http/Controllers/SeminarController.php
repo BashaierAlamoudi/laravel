@@ -4,10 +4,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Seminars;
 use App\Models\User;
+use App\Models\event_model; // Import the Event model
+use App\Http\Controllers\EventController;
+
 
 
 class SeminarController extends Controller
+
 {
+    
+
     
     
     public function fetchStudentsData() {
@@ -22,6 +28,7 @@ class SeminarController extends Controller
             'loginId' => $seminar->user ? $seminar->user->loginId : 'unknown',
             'Name' => $seminar->Name,
             'Title' => $seminar->title,
+            'Type'=>$seminar->type,
             'Field' => $seminar->field,
             'Location' => $seminar->location,
             'Date' => $seminar->date,
@@ -43,6 +50,7 @@ class SeminarController extends Controller
                 'Title' => $seminar->title,
                 'Field' => $seminar->field,
                 'Location' => $seminar->location,
+                'Type'=>$seminar->type,
                 'Date' => $seminar->date,
                 'Time' => $seminar->time,
             ];
@@ -162,9 +170,18 @@ class SeminarController extends Controller
             'location' => $validatedData['Location'],
             'type' => $validatedData['Type'],
         ]);
-       // return response($seminar);
-    
-        // Save the seminar object to the database
-        $seminar->save();
+        if ($seminar->type=='public'){
+            $title= $validatedData['Title'] . ' Seminar';
+            $event = new event_model([
+                'title' => $title,
+                'eventStart' => $validatedData['Date'],
+                'eventEnd' => $validatedData['Date'],
+                'description' => $validatedData['Time'],
+            ]);
+            $eventController = new EventController();
+            $eventController->addSeminar($event);
+
+        }
+        
         
     }}
