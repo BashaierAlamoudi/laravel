@@ -67,10 +67,14 @@ Route::get('/fetch-user-data/{id}', [StudentController::class, 'fetchUserData'])
 Route::post('/update-user-data', [StudentController::class, 'updateUserdata']);
 Route::get('/statusData', [StudentController::class, 'statusData']);
 Route::get('/student/student-filter', [StudentController::class, 'fetchWithFilter']);
+Route::put('/student/update/{id}', [StudentController::class, 'update']);
 Route::delete('/students/delete', [StudentController::class, 'delete']);
 Route::post('/login',[loginController::class,'login']);
-
-
+Route::get('/student/details/{id}', [StudentController::class, 'getStudentDetails']);
+Route::get('/students/{userId}/supervisors', [StudentController::class, 'getSupervisors']);
+Route::get('/students/supervisors',  [StudentController::class, 'getAllSupervisors']);
+Route::put('/students/{userId}/update-supervisors',  [StudentController::class, 'updateSupervisors']);
+Route::get('students/supervisors-with-their-students', [StudentController::class, 'getSupervisorsWithStudents']);
 
 Route::get('/Rule',[RuleController::class,'fetchData']);
 
