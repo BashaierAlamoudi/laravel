@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('supervisiorId');
             $table->string('firstName');
-            $table->string('middletName');
+            $table->string('middleName');
             $table->string('lastName');
             $table->string('phone_number', 10);
             $table->string('email',191)->unique();

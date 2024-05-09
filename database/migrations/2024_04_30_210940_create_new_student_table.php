@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->unsignedBigInteger('userId')->unique();
-            $table->unsignedBigInteger('nationalId')->unique();
+            $table->string('nationalId');
             $table->string('password');
             $table->string('firstName');
-            $table->string('middletName');
+            $table->string('middleName');
             $table->string('lastName');
             $table->string('phone_number', 10);
             $table->string('email',191)->unique();
@@ -27,6 +27,7 @@ return new class extends Migration
             $table->date('enrollYear');
             $table->float('gpa', 4, 2);
         });
+           
     }
 
     /**

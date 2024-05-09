@@ -6,9 +6,15 @@
     <title>{{$data['subject']}}</title>
 </head>
 <body>
+
     <p>Dear Student,</p>
 
-    <p>{{$data['emailDescription']}}</p>
+   <p>this is your new password</p>
+    <p>{{$data['password']}} </p>
+    <p>BECAREFUL!</p>
+    <p> DO NOT SHARE THE PASSWORD WITH ANYONE'</p>
+
+
     
 </body>
 </html>

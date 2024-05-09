@@ -8,99 +8,35 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 class NewStudentController extends Controller
 {
-    public function fetchData()
-    {
-        // Fetch all new students from the New_Student model
-        $newStudents = New_Student::all();  
-
-        $formattedStudents = array();
-
-        foreach ($newStudents as $newStudent) {
-            $formattedStudents[] = [
-                'loginId' => $newStudent->userId,
-                'nationalId' => $newStudent->nationalId,
-                'department' => $newStudent->department,
-                'StudentName' => $newStudent->firstName . ' ' . $newStudent->middletName . ' ' . $newStudent->lastName,
-                'section' => $newStudent->section,
-                'email' => $newStudent->email,
-            ];
-        }
-
-        // Return the new students as a response (you can customize this)
-        return response()->json($formattedStudents);
-    }
-
-
-    public function add(Request $request)
-    {
-
-        $newStudent = new New_Student ([
-            'userId' => $request['loginId'],
-            'password' => $request['password'],
-            'nationalId' => $request['nationalId'],
-            'enrollYear' => $request['yearEnroll'],
-            'department' => $request['department'],
-            'firstName' => $request['firstName'],
-            'middletName'=> $request['middleName'],
-            'lastName'=> $request['lastName'],
-            'email' => $request['email'],
-            'section' => $request['section'],
-             'gpa'=> $request['gpa'],
-            'phone_number'=> $request['phoneNumber'],
-        ]);
-         
-       
-
-        // Save the new Event instance to the database
-        $newStudent ->save();
     
-        //  return a response to indicate success or failure
-        return response()->json(['message' => 'student  instance saved successfully']);
-    }
 
-    public function fetchData1()
+
+
+    public function fetchData()
     {
         // Fetch all new students from the Event model
         $newStudents = $New_Student::all();  
-        $formattedEvents =array();
+        $formattedData =array();
 
-        foreach ($newStudents as $newStudent1) {
-            $formattedEvents[] = [
-                'loginId' => $newStuden1->userId,
-                'nationalId' => $newStuden1->nationalId,
-                'department' => $newStuden1->department,
+        foreach ($newStudents as $newStudent) {
+            $formattedData[] = [
+                'id'=>$newStudent->id,
+                'loginId' => $newStudent->userId,
+                'nationalId' => $newStudent->nationalId,
+                'department' => $newStudent->department,
                 'StudentName' => ($newStuden->firstName+$newStuden->middletName+$newStuden->lastName),
-                'section'=>$newStuden1->section,
-                'email'=>$newStuden1->email,
+                'section'=>$newStudent->section,
+                'email'=>$newStudent->email,
+                'gpa'=>$newStudent->gpa,
+                'phone_number'=>$newStudent->phone_number,
+
                 
             ];
         }
-
-        // Return the new students as a response (you can customize this)
-        return response()->json($formattedEvents);
+        return response()->json($formattedData);
     }
   
-    public function fetchDat()
-    {
-        // Fetch all new students from the New_Student model
-        $newStudents = New_Student::all();  
-
-        $formattedStudents = array();
-
-        foreach ($newStudents as $newStudent2) {
-            $formattedStudents[] = [
-                'loginId' => $newStudent2->userId,
-                'nationalId' => $newStudent2->nationalId,
-                'department' => $newStudent2->department,
-                'StudentName' => $newStudent2->firstName . ' ' . $newStudent2->middletName . ' ' . $newStudent2->lastName,
-                'Section' => $newStudent2->section,
-                'email' => $newStudent2->email,
-            ];
-        }
-
-        // Return the new students as a response (you can customize this)
-        return response()->json($formattedStudents);
-    }
+    
     
 
     public function acceptStudent(Request $request, $studentId)
@@ -142,4 +78,5 @@ class NewStudentController extends Controller
         $newStudent->delete();
    
     }
+    
 }

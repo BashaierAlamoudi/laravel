@@ -15,6 +15,8 @@ class Student extends Model
     protected $primaryKey = 'userId';
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false;
+
 
     // Optionally, you can define casts for specific attributes
     protected $casts = [

@@ -15,7 +15,7 @@ class User extends Model implements Authenticatable
     //protected $primaryKey= 'loginId';
 
     protected $fillable = [
-        'loginId', 'password', 'firstName', 'middletName', 'lastName', 'phone_number', 'email', 'department', 'role'
+        'loginId', 'password', 'firstName', 'middleName', 'lastName', 'phone_number', 'email', 'department', 'role','gender'
     ];
 
     protected $hidden = [

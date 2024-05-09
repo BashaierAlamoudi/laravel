@@ -9,7 +9,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\loginController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\RuleController;
-use App\Http\Controllers\NewStudentController; 
+use App\Http\Controllers\signUp; 
 use App\Http\Controllers\emailcontroller;
 /*
 |--------------------------------------------------------------------------
@@ -74,10 +74,20 @@ Route::post('/login',[loginController::class,'login']);
 
 Route::get('/Rule',[RuleController::class,'fetchData']);
 
-Route::post('/signup',[NewStudentController::class,'add']);
+Route::post('/signup',[signUp::class,'AddStudent']);
+Route::post('/student/acceptStudent',[signUp::class,'acceptStudent']);
+Route::get('/student/fetchNewStudents',[signUp::class,'fetchData']);
+
+Route::get('/student/resetPassword/{email}',[signUp::class,'forgotPassword']);
+
+
 Route::get('/Database-panel/newstudent',[NewStudentController::class,'fetchData']);
 Route::post('/Database-panel/accept/{id}', [NewStudentController::class, 'acceptStudent']);
 Route::post('/Database-panel/reject/{id}', [NewStudentController::class, 'delete']);
+
+
+Route::get('/delete/{id}', [signUp::class, 'delete']);
+
 
 
 
