@@ -21,7 +21,8 @@ return new class extends Migration
             $table->string('status');
             $table->string('enrollYear');
             $table->float('gpa', 4, 2);
-
+            $table->date('thesisStartDate')->nullable();
+            
         });
         Schema::table('student', function (Blueprint $table) {
         $table->foreign('userId')

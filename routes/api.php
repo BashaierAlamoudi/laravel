@@ -11,6 +11,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\RuleController;
 use App\Http\Controllers\signUp; 
 use App\Http\Controllers\emailcontroller;
+use App\Http\Controllers\ProgressDescriptionController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -88,7 +89,17 @@ Route::post('/Database-panel/reject/{id}', [NewStudentController::class, 'delete
 
 Route::get('/delete/{id}', [signUp::class, 'delete']);
 
-
-
-
 Route::get('/sendMail', [emailcontroller::class, 'sendTestEmail']);
+
+Route::get('/progress/progress-description',[ProgressDescriptionController::class,'fetchData']);
+Route::get('/progress/progress-tracker/{id}',[ProgressDescriptionController::class,'progress']);
+
+
+
+
+Route::get('/SeminarAttendances/{id}', [SeminarController::class, 'fetchStudentAttendance']);
+Route::post('/SeminarAttendances/edit/{id}', [SeminarController::class, 'updateSeminarAttendance']);
+Route::post('/SeminarAttendances/delete/{id}', [SeminarController::class, 'deleteSeminarAttendance']);
+Route::post('/SeminarAttendances/add/', [SeminarController::class, 'addSeminarAttendance']);
+Route::get('/SeminarAttendances/pdf/{filename}', [SeminarController::class, 'getPdf']);
+Route::get('/MessageNotification/{$id}',[ProgressDescriptionController::class,'massage']);

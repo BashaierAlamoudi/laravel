@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Seminars;
 use App\Models\User;
+use App\Models\SeminarAttendance;
 use App\Models\event_model; // Import the Event model
 use App\Http\Controllers\EventController;
 
@@ -184,4 +185,113 @@ class SeminarController extends Controller
         }
         
         
-    }}
+    }
+
+
+    public function fetchStudentAttendance($id){
+        // Retrieve all seminar attendances for the user
+        $seminarAttendances = SeminarAttendance::where('user_id', $id)->get();
+    
+        // Map each attendance record to format the data
+        $formattedData = $seminarAttendances->map(function ($seminarAttendance) {
+            return [
+                'seminarId' => $seminarAttendance->seminarId,
+                'title' => $seminarAttendance->title,
+                'date' => $seminarAttendance->date,
+                'certificateFile' => $seminarAttendance->certificate
+            ];
+        });
+    
+        return response()->json($formattedData);
+    }
+    
+    public function updateSeminarAttendance(Request $request, $id)
+    {
+        $seminarAttendance = SeminarAttendance::find($id);
+
+        if (!$seminarAttendance) {
+            return response()->json(['message' => 'Seminar attendance not found'], 404);
+        }    
+     $seminarAttendance->title= $request->input('title');
+     $seminarAttendance->date = $request->input('date');
+        $seminar ->save();
+       
+        return response()->json($seminarAttendance);
+    }
+ 
+ public function deleteSeminarAttendance($seminarId)
+    {
+      
+        $Seminar = seminarAttendance::find($seminarId);
+        if (!$Seminar) {
+            return response()->json(['message' => 'Seminar not found'], 404);
+        }
+    
+        try {
+            $Seminar->delete();
+            return response()->json(['message' => 'Seminar successfully deleted'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to delete Seminar', 'error' => $e->getMessage()], 500);
+        }
+    }
+    
+    public function addSeminarAttendance(Request $request)
+    {
+        // Validate the incoming request data
+        $validatedData = $request->validate([
+            'loginId' => 'required|exists:users,loginId',
+            'title' => 'required|string|max:255',
+            'date' => 'required|date',
+            'certificateFile' => 'nullable|file|mimes:pdf', // Validate the file is a PDF if provided
+        ]);
+    
+        // Fetch the user based on loginId
+        $user = User::where('loginId', $validatedData['loginId'])->first();
+    
+        // Process the certificate file if it is included
+        if ($request->hasFile('certificateFile')) {
+            $file = $request->file('certificateFile');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('certificates', $filename, 'public'); // Store in the certificates directory
+            $certificatePath = Storage::url($path);
+        } else {
+            $certificatePath = null; // No certificate provided
+        }
+    
+        // Create the seminar attendance record
+        $seminarAttendance = new SeminarAttendance([
+            'user_id' => $user->id,  // Assuming your SeminarAttendance model uses 'user_id' as a foreign key
+            'title' => $validatedData['title'],
+            'date' => $validatedData['date'],
+            'certificate' => $certificatePath,
+        ]);
+    
+        // Save the seminar attendance to the database
+        $seminarAttendance->save();
+    
+        // Return a JSON response indicating success
+        return response()->json([
+            'message' => 'Seminar attendance added successfully',
+            'data' => $seminarAttendance
+        ], 201);
+    }
+    public function getPdf($filename)
+{
+    $path = storage_path('app/public/pdf/' . $filename); // Adjust the path as needed
+
+    if (!File::exists($path)) {
+        abort(404);
+    }
+
+    $file = File::get($path);
+    $type = File::mimeType($path);
+
+    $response = Response::make($file, 200);
+    $response->header("Content-Type", $type);
+
+    return $response;
+}
+
+
+
+}
