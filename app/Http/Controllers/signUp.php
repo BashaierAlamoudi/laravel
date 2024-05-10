@@ -86,9 +86,8 @@ class signUp extends Controller
             'enrollYear'=>$request['YearEnroll'],
             'gpa'=>$request['gpa'],
             'status'=>'active',
-            'withdrawSemester'=>0,
-            'postponedSemester'=>0,
-            'graduationDate'=>$request['YearEnroll'],
+            'field'=>'', 	
+        
         ]);
         $newStudent->save();
         $this->sendMail($newUser->id);

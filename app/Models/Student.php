@@ -32,24 +32,9 @@ class Student extends Model
     {
         return $this->hasMany(Seminar::class);
     }
-    public function supervisors()
-    {
-        return $this->belongsToMany(Supervisor::class, 'supervise', 'userId', 'supervisorId')
-                    ->withPivot('type');
-    }
+    
 
-    public function getSupervisorNames()
-    {
-        return $this->supervisors->map(function ($supervisor) {
-            // Concatenate the full name, checking for middle name existence
-            $fullName = $supervisor->firstName;
-            if (!empty($supervisor->middleName)) {
-                $fullName .= ' ' . $supervisor->middleName;
-            }
-            $fullName .= ' ' . $supervisor->lastName;
-            return $fullName;
-        })->join(', ');
-    }
+    
     public function requests()
     {
         return $this->hasMany(Request::class);
@@ -66,7 +51,10 @@ public function enrollments()
 {
     return $this->hasMany(Enrollment::class, 'student_id');
 }
-
+public function supervisors()
+    {
+        return $this->belongsToMany(Supervisor::class, 'supervise', 'student_id', 'supervisor_id');
+    }
 public function calculateExpectedGraduationYear()
 {
     // Assuming each academic year has 2 semesters.

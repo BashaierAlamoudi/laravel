@@ -19,10 +19,4 @@ class Supervisor extends Model
         'email', 
         'department', 
     ];
-    public function students()
-    {
-        return $this->belongsToMany(Student::class, 'supervise', 'supervisorId', 'userId')
-                    ->withPivot('type');
-    }
-    
 }

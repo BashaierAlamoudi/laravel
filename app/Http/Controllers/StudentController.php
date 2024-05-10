@@ -33,6 +33,7 @@ class StudentController extends Controller {
         }
     }
 
+    
     //using in student information component 
     public function fetchUserData($id): \Illuminate\Http\JsonResponse
 {
