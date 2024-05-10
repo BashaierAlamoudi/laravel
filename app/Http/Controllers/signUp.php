@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\newStudent;
 use App\Mail\forgotPassword;
+use App\Mail\NewStudentRequest;
+
 
 use Illuminate\Http\Request;
 
@@ -41,7 +43,6 @@ class signUp extends Controller
     public function AddStudent(Request $request){
             $newStudent = new New_Student ([
             'userId' => $request['loginId'],
-            'password' => $request['confirampassword'],
             'firstName' => $request['firstName'],
             'middleName' => $request['middleName'],
             'lastName' => $request['lastName'],
@@ -56,7 +57,7 @@ class signUp extends Controller
 
         $newStudent->save();
         //$this->acceptStudent($request);
-
+        Mail::to("gadahAlmuaikel@gmail.com")->send(new NewStudentRequest());
         return response()->json(['message' => 'Student added successfully'], 200);
     }
     public function acceptStudent(Request $request ){
@@ -140,8 +141,23 @@ public function forgotPassword($email){
      
 
 
-    public function generatePassword($length = 8)
-    {
-        return Str::random($length);
+public function generatePassword($length = 8)
+{
+    // Generate a random 6-digit number
+    $randomNumber = mt_rand(100000, 999999);
+    
+    // Concatenate "ar@" with the random number
+    $password = "ar@" . $randomNumber;
+    
+    // If the total length of the password is less than the specified length,
+    // append random characters to meet the length requirement
+    $remainingLength = $length - strlen($password);
+    if ($remainingLength > 0) {
+        $randomChars = Str::random($remainingLength);
+        $password .= $randomChars;
     }
+    
+    return $password;
+}
+
 }
