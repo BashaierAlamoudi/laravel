@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('loginId')->unique();
             $table->string('password');
             $table->string('firstName');
-            $table->string('middletName');
+            $table->string('middleName');
             $table->string('lastName');
             $table->string('phone_number', 10)->unique();
             $table->string('email',191)->unique();

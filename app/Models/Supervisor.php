@@ -13,7 +13,7 @@ class Supervisor extends Model
     protected $fillable = [
         'supervisorId', 
         'firstName', 
-        'middletName', 
+        'middleName', 
         'lastName', 
         'phone_number', 
         'email', 
