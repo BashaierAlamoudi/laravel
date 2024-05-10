@@ -172,12 +172,12 @@ class SeminarController extends Controller
             'type' => $validatedData['Type'],
         ]);
         if ($seminar->type=='public'){
-            $title= $validatedData['Title'] . ' Seminar';
+            $title= 'Title of Semiar: '.$validatedData['Title'] ;
             $event = new event_model([
                 'title' => $title,
                 'eventStart' => $validatedData['Date'],
                 'eventEnd' => $validatedData['Date'],
-                'description' => $validatedData['Time'],
+                'description' => "A  Seminar presented by ".$validatedData['Name']." under title ".$validatedData['Title']." that is in field ".$validatedData['Field'] ,
             ]);
             $eventController = new EventController();
             $eventController->addSeminar($event);
