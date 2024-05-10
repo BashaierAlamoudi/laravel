@@ -17,4 +17,8 @@ class Supervise extends Model
         'type',
     ];
 
+    public function supervisor()
+    {
+        return $this->belongsTo(Supervisor::class, 'supervisorId');
+    }
 }

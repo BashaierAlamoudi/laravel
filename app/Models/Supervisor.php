@@ -20,8 +20,9 @@ class Supervisor extends Model
         'department', 
     ];
     public function students()
-{
-    return $this->belongsToMany(User::class, 'supervise', 'supervisiorId', 'userId')
-                ->withPivot('type');
-}
+    {
+        return $this->belongsToMany(Student::class, 'supervise', 'supervisorId', 'userId')
+                    ->withPivot('type');
+    }
+    
 }

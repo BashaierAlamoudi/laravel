@@ -18,6 +18,7 @@ class CreateEnrollmentsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('student_id');
             $table->unsignedBigInteger('semester_id');
+            $table->string('status');
             $table->timestamps();
 
             // Foreign keys
