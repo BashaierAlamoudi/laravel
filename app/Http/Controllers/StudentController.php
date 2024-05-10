@@ -5,12 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\User;
-use App\Models\Supervisor;
 use App\Models\Publications;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log; // Correct import for the Log facade
 
 class StudentController extends Controller {
 
@@ -35,72 +33,54 @@ class StudentController extends Controller {
         }
     }
 
+    
+    //using in student information component 
     public function fetchUserData($id): \Illuminate\Http\JsonResponse
-    {
+{
+    $user = User::where('loginId', $id)->first();
 
-        $user = User::where('loginId', $id)->first();
+    if ($user) {
+        // Retrieve the associated student data using the relationship method
+        $student = $user->students()->first(); // Ensure that this method is defined in your User model.
+        $studentArray = $student ? $student->toArray() : [];
 
-        if ($user) {
-            // Retrieve the associated student data using the relationship method
-            $student = $user->students()->first();
-            if ($student !== null) {
-                $studentArray = $student->toArray();
-            } else {
-                $studentArray = [];
-            }
-            // return json_encode($student);
-            // Prepare the user data
-            $userData = [
-                'loginId' => $user->loginId,
-                'firstName' => $user->firstName,
-                'middleName' => $user->middletName, // Typo: It should be 'middleName', not 'middletName'
-                'lastName' => $user->lastName,
-                'email' => $user->email,
+        // Prepare the user data
+        $userData = [
+            'loginId' => $user->loginId,
+            'firstName' => $user->firstName,
+            'middleName' => $user->middleName, // Corrected typo
+            'lastName' => $user->lastName,
+            'email' => $user->email,
+            'phone' => $user->phone_number,
+            'department' => $user->department,
+            'section' => $user->gender,
+        ];
+     
+        // If student data is available, merge it with the user data
+        if ($student) {
+            $studentData = [
+                'graduationDate' => $student->calculateExpectedGraduationYear(),
+                'withdrawSemester' => $student->countwithdrawSemesters(),
+                'postponedSemester' => $student->countpostponedSemesters(),
+                'status' => $student->status,
+                'enrollYear' => $student->enrollYear,
+                'gpa' => $student->gpa,
+              'remainingSemesters' => $student->countRemainingSemesters(),
+             // 'field'  => $student->$field,
+         //  'dissertationStartYear'  => $student->$thesisStartDate,
+           
             ];
 
-            // If student data is available, merge it with the user data
-            if ($student) {
-                // $studentData = [
-                //     'graduationDate' => $student->graduationDate,
-                //     'withdrawSemester' => $student->withdrawSemester,
-                //     'postponedSemester' => $student->postponedSemester,
-                //     'status' => $student->status,
-                //     'enrollYear' => $student->enrollYear,
-                //     'gpa' => $student->gpa,
-                // ];
-
-                // Merge student data with user data
-                $userData = array_merge($userData, $studentArray);
-            }
-
-            // Log fetched data to the console
-
-            return response()->json($userData);
+            // Merge student data with user data
+            $userData = array_merge($userData, $studentArray, $studentData);
         }
 
-        // If user is not found or data fetching fails, return error response
-        return response()->json(['error' => 'User not found'], 404);
+        return response()->json($userData);
     }
 
-    public function getSupervisors($userId) {
-        $user = User::find($userId);
-        $supervisors = $user->supervisors()->get()->map(function ($supervisor) {
-            return [
-                'id' => $supervisor->id,
-                'type' => $supervisor->pivot->type, // Ensure the pivot information is correctly loaded
-            ];
-        });
-    
-        return response()->json(['supervisors' => $supervisors]);
-    }
-
-    public function getSupervisorsWithStudents(){
-        $supervisors = Supervisor::with(['students' => function ($query) {
-            $query->select('user.id', 'user.loginId', 'user.firstName', 'user.lastName');
-        }])->get();
-    
-        return response()->json($supervisors);
-    }
+    // If user is not found or data fetching fails, return error response
+    return response()->json(['error' => 'User not found'], 404);
+}
     public function fetchWithFilter(Request $request)
     {
         $query = DB::table('user')
@@ -176,136 +156,7 @@ return response()->json($query->get());
 
         ]);
     }
-    // app/Http/Controllers/StudentController.php
 
-
-
-
-    public function update(Request $request, $id)
-    {
-        DB::beginTransaction();
-        try {
-            // Update user details
-            $user = User::findOrFail($id);
-            $user->update($request->only(['firstName', 'lastName', 'email', 'phone_number', 'department']));
-        
-            // Update student details
-            if ($user->student) {
-                $user->student->update($request->only(['graduationDate', 'status', 'enrollYear', 'gpa']));
-        
-                if ($request->filled('mainSupervisorId')) {
-                    // Detach existing main supervisor
-                    $user->supervisors()->wherePivot('type', 'main')->detach();
-                    // Attach new main supervisor
-                    $user->supervisors()->attach($request->mainSupervisorId, ['type' => 'main']);
-                }
-    
-                // Handling co-supervisor update
-                if ($request->filled('coSupervisorId')) {
-                    // Detach existing co-supervisor
-                    $user->supervisors()->wherePivot('type', 'co')->detach();
-                    // Attach new co-supervisor
-                    $user->supervisors()->attach($request->coSupervisorId, ['type' => 'co']);
-                }
-            } else {
-                throw new Exception("No associated student found for user $id");
-            }
-        
-            DB::commit();
-            return response()->json(['message' => 'Updated successfully']);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error("Update failed for user $id: " . $e->getMessage());
-            return response()->json(['message' => 'Update failed', 'error' => $e->getMessage()], 500);
-        }
-    }
-    
-    
-
-
-    
-    public function fetchStudentDetails($id)
-{
-    $studentDetails = DB::table('user')
-        ->join('student', 'user.id', '=', 'student.userId')
-        ->where('user.id', $id)
-        ->select(
-            'user.id',
-            'user.loginId',
-            'user.firstName',
-            'user.lastName',
-            'user.phone_number',
-            'user.email',
-            'user.gender',
-            'user.department',
-            'student.graduationDate',
-            'student.withdrawSemester',
-            'student.postponedSemester',
-            'student.status',
-            'student.enrollYear',
-            'student.gpa'
-        )->first();
-
-    if (!$studentDetails) {
-        return response()->json(['message' => 'Student not found'], 404);
-    }
-
-    return response()->json($studentDetails);
-}
-
-// Assuming you have a StudentController
-public function getStudentDetails($id) {
-      // Prepare your query using Query Builder
-      $studentDetails = DB::table('user')
-      ->join('student', 'user.id', '=', 'student.userId')
-      ->where('student.userId', $id)  // Assuming you are using student.id to identify the student
-      ->select(
-          'user.id as userId',
-          'user.loginId',
-          'user.firstName',
-          'user.lastName',
-          'user.department',
-          'user.email',
-          'user.phone_number',
-          'student.graduationDate', // Assuming you want to fetch this from the student table
-          'student.status',         // More fields from the student table
-          'student.enrollYear',
-          'student.gpa'
-      )
-      ->first();
-
-  // Check if the student details were found
-  if (!$studentDetails) {
-      return response()->json(['message' => 'Student not found'], 404);
-  }
-
-  return response()->json($studentDetails);
-}
-public function updateSupervisors(Request $request, $userId) {
-    $this->validate($request, [
-        'mainSupervisorId' => 'required|exists:supervisors,id',
-        'coSupervisorId' => 'exists:supervisors,id'
-    ]);
-
-    DB::transaction(function () use ($request, $userId) {
-        $user = User::findOrFail($userId);
-        $user->supervisors()->sync([
-            $request->mainSupervisorId => ['type' => 'main'],
-            $request->coSupervisorId => ['type' => 'co']
-        ]);
-    });
-
-    return response()->json(['message' => 'Supervisors updated successfully']);
-}
-public function getAllSupervisors() {
-    $supervisors = Supervisor::all()->map(function ($supervisor) {
-        return [
-            'id' => $supervisor->id,
-            'name' => $supervisor->firstName . ' ' . $supervisor->lastName,
-        ];
-    });
-    return response()->json($supervisors);
-}
     public function updateUserdata(Request $request){
 
         try{
