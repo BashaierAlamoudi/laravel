@@ -13,9 +13,7 @@ use App\Http\Controllers\EventController;
 class SeminarController extends Controller
 
 {
-    
 
-    
     
     public function fetchStudentsData() {
         

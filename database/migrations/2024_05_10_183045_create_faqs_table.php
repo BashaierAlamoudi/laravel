@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rules', function (Blueprint $table) {
+       
+        Schema::create('faqs', function (Blueprint $table) {
             $table->id();
-            $table->string('pdfPath')->nullable();
+            $table->string('question')->nullable();
+            $table->string('answer')->nullable();
             $table->timestamps();
         });
     }
@@ -23,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rules');
+        Schema::dropIfExists('faqs');
     }
 };

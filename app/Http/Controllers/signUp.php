@@ -55,8 +55,6 @@ class signUp extends Controller
         ]);
 
         $newStudent->save();
-        //$this->acceptStudent($request);
-
         return response()->json(['message' => 'Student added successfully'], 200);
     }
     public function acceptStudent(Request $request ){
@@ -65,7 +63,9 @@ class signUp extends Controller
 
         $firstName = $nameParts[0] ?? '';
         $middleName = implode(' ', array_slice($nameParts, 1, -1)) ?? ''; // Join middle names with spaces
-        $lastName = end($nameParts) ?? '';
+        $lastName = end($nameParts) ?? ''; 
+        //return response()->json($middleName);
+
         $newUser = new User([
             'loginId'=>$request['loginId'],
             'password'=>$password,
@@ -133,6 +133,10 @@ public function forgotPassword($email){
         ];
 
     Mail::to($user->email)->send(new forgotPassword($data));}
+    else{
+        return response()->json('no email');
+
+    }
 
 }
 

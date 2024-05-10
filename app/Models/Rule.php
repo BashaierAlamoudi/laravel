@@ -9,7 +9,7 @@ class Rule extends Model
 {
     use HasFactory;
     protected $table = 'rules';
-    protected $fillable = ['question', 'answer'];
+    protected $fillable = ['pdfPath'];
 
      
 }

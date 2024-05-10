@@ -55,7 +55,9 @@ Route::get('/studentpublications/{id}', [PublicationController::class, 'fetchStu
 Route::post('/publications/edit/{id}', [PublicationController::class, 'update']);
 Route::post('/publications/delete/{id}', [PublicationController::class, 'delete']);
 Route::post('/publications/add/', [PublicationController::class, 'add']);
-Route::get('/publications/pdf/{filename}', [PublicationController::class, 'getPdf']);
+Route::get('/publications/pdf/{filename}', [RuleController::class, 'getPdf']);
+
+Route::get('/rules/pdf/{filename}', [PublicationController::class, 'getPdfUrl']);
 
 
 
@@ -77,7 +79,12 @@ Route::get('/students/supervisors',  [StudentController::class, 'getAllSuperviso
 Route::put('/students/{userId}/update-supervisors',  [StudentController::class, 'updateSupervisors']);
 Route::get('students/supervisors-with-their-students', [StudentController::class, 'getSupervisorsWithStudents']);
 
-Route::get('/Rule',[RuleController::class,'fetchData']);
+Route::get('/Rule/fetchRule',[RuleController::class,'fetchRules']);
+Route::get('/Rule/fetchFAQs',[RuleController::class,'fetchFAQs']);
+Route::post('rules/add',[RuleController::class,'addRule']);
+
+
+
 
 Route::post('/signup',[signUp::class,'AddStudent']);
 Route::post('/student/acceptStudent',[signUp::class,'acceptStudent']);

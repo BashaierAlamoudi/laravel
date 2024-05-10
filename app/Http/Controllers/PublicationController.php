@@ -87,6 +87,8 @@ class PublicationController extends Controller
             'date' => 'required|date',
             'pdfFile' => 'required|file|mimes:pdf', // Validate the file is a PDF
         ]);
+
+
         $user = User::where('loginId', $validatedData['loginId'])->first();
     
         if ($request->hasFile('pdfFile')) {
@@ -128,7 +130,9 @@ class PublicationController extends Controller
     $response->header("Content-Type", $type);
 
     return $response;
+
 }
+
 
   
 public function update(Request $request, $publicationId)
