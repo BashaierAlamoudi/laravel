@@ -87,6 +87,7 @@ Route::post('rules/add',[RuleController::class,'addRule']);
 
 
 Route::post('/signup',[signUp::class,'AddStudent']);
+
 Route::post('/student/acceptStudent',[signUp::class,'acceptStudent']);
 Route::get('/student/fetchNewStudents',[signUp::class,'fetchData']);
 

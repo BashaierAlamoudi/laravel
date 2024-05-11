@@ -56,10 +56,9 @@ class signUp extends Controller
         ]);
 
         $newStudent->save();
-        //$this->acceptStudent($request);
-        Mail::to("gadahAlmuaikel@gmail.com")->send(new NewStudentRequest());
         return response()->json(['message' => 'Student added successfully'], 200);
     }
+
     public function acceptStudent(Request $request ){
         $password=$this->generatePassword();
         $nameParts = explode(' ', $request->input('StudentName'));

@@ -13,7 +13,9 @@ use App\Http\Controllers\EventController;
 class SeminarController extends Controller
 
 {
+    
 
+    
     
     public function fetchStudentsData() {
         
@@ -175,7 +177,7 @@ class SeminarController extends Controller
                 'title' => $title,
                 'eventStart' => $validatedData['Date'],
                 'eventEnd' => $validatedData['Date'],
-                'description' => $validatedData['Time'],
+                'description' => "A  Seminar presented by ".$validatedData['Name']." under title ".$validatedData['Title']." that is in field ".$validatedData['Field'] ,
             ]);
             $eventController = new EventController();
             $eventController->addSeminar($event);
