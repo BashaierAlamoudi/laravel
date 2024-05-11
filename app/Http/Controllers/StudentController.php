@@ -57,28 +57,22 @@ class StudentController extends Controller {
             'section' => $user->gender,
         ];
      
-        // If student data is available, merge it with the user data
         if ($student) {
             $studentData = [
-           //     'graduationDate' => $student->calculateExpectedGraduationYear(),
-           //     'withdrawSemester' => $student->countwithdrawSemesters(),
-           //     'postponedSemester' => $student->countpostponedSemesters(),
                 'status' => $student->status,
                 'enrollYear' => $student->enrollYear,
                 'gpa' => $student->gpa,
-              'remainingSemesters' => $student->countRemainingSemesters(),
-             // 'field'  => $student->$field,
-         //  'dissertationStartYear'  => $student->$thesisStartDate,
-           
+                'field'  => $student->field, // This could be null
+                'dissertationStartYear'  => $student->thesisStartDate , // Format date or handle null
             ];
-
+    
             // Merge student data with user data
             $userData = array_merge($userData, $studentArray, $studentData);
         }
-
+    
         return response()->json($userData);
     }
-
+    
     // If user is not found or data fetching fails, return error response
     return response()->json(['error' => 'User not found'], 404);
 }
@@ -189,62 +183,36 @@ return response()->json($query->get());
         ]);
     }
 
-    public function updateUserdata(Request $request){
+public function updateUserdata(Request $request) {
+    try {
+        $requestData = $request->all();
+        $user = User::where('loginId', $requestData['loginId'])->first();
 
-        try{
-            $requestData = $request->all();
-
-            // Find the user by loginId
-            $user = User::where('loginId', $requestData['loginId'])->first();
-
-            // Update user data
-            if ($user) {
-                $user->firstName = $requestData['firstName'];
-                $user->lastName = $requestData['lastName'];
-                $user->email = $requestData['email'];
-                $user->save();
-            }
-
-            // Find the student by loginId
-            $student = Student::where('userId', $requestData['userId'])->first();
-
-            // Update student data
-            if ($student) {
-                $student->dateOfBirth = $requestData['dateOfBirth'];
-               // $student->graduationDate = $requestData['graduationDate'];
-                $student->withdrawSemester = $requestData['withdrawSemester'];
-                $student->postponedSemester = $requestData['postponedSemester'];
-                $student->status = $requestData['status'];
-                $student->enrollYear = $requestData['enrollYear'];
-                $student->gpa = $requestData['gpa'];
-                $student->supervisor = $requestData['supervisor'];
-                $student->coSupervisor = $requestData['coSupervisor'];
-                $student->phoneNumber = $requestData['phoneNumber'];
-                $student->section = $requestData['section'];
-                $student->department = $requestData['department'];
-                $student->thesisStartDate = $requestData['thesisStartDate'];
-                $student->field = $requestData['field'];
-                $student->semesterNumber = $requestData['semesterNumber'];
-                $student->remainingSemesters = $requestData['remainingSemesters'];
-                $student->remainingCourses = $requestData['remainingCourses'];
-                $student->dissertationStartYear = $requestData['dissertationStartYear'];
-                $student->numberOfSemesters = $requestData['numberOfSemesters'];
-                $student->numberOfSeminars = $requestData['numberOfSeminars'];
-
-                // Update any other student fields as needed
-
-                $student->save();
-            }
-
-            // You can return a response indicating success or failure
-            return response()->json(['success'=> true,'message' => 'Data updated successfully']);
+        if ($user) {
+            $user->update([
+                'firstName' => $requestData['firstName'],
+                'middleName' => $requestData['middleName'],
+                'lastName' => $requestData['lastName'],
+                'email' => $requestData['email'],
+                'phone_number' => $requestData['phone'], // assuming 'phone' is the correct key
+            ]);
         }
 
-        catch (\Exception $e) {
-            // Handle any exceptions
-            return response()->json(['success'=> false,'message' => 'An error occurred while updating student data.', 'details' => $e->getMessage()], 500);
+        $student = Student::where('userId', $user->id)->first();
+
+        if ($student) {
+            $student->update([
+                'thesisStartDate' => $requestData['dissertationStartYear'],
+                // other fields as needed ...
+            ]);
         }
+
+        return response()->json(['success' => true, 'message' => 'Data updated successfully']);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => 'An error occurred while updating student data.', 'details' => $e->getMessage()], 500);
     }
+}
+
     public function updateSupervisors(Request $request, $userId) {
         $this->validate($request, [
             'mainSupervisorId' => 'required|exists:supervisors,id',
