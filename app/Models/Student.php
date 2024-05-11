@@ -51,10 +51,12 @@ public function enrollments()
 {
     return $this->hasMany(Enrollment::class, 'student_id');
 }
+
 public function supervisors()
     {
         return $this->belongsToMany(Supervisor::class, 'supervise', 'student_id', 'supervisor_id');
     }
+
 public function calculateExpectedGraduationYear()
 {
     // Assuming each academic year has 2 semesters.

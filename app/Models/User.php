@@ -57,4 +57,5 @@ public function markUnreadNotificationsAsRead()
         // Return the unread notifications
         return $unreadNotifications;
     }
+    
 }
