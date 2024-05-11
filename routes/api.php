@@ -99,7 +99,7 @@ Route::post('/Database-panel/accept/{id}', [NewStudentController::class, 'accept
 Route::post('/Database-panel/reject/{id}', [NewStudentController::class, 'delete']);
 
 
-Route::get('/delete/{id}', [signUp::class, 'delete']);
+Route::get('/delete/{id}', [signUp::class, 'reject']);
 
 Route::get('/sendMail', [emailcontroller::class, 'sendTestEmail']);
 

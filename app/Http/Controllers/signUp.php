@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\newStudent;
 use App\Mail\forgotPassword;
 use App\Mail\NewStudentRequest;
+use App\Mail\rejectMail;
 
 
 use Illuminate\Http\Request;
@@ -56,9 +57,10 @@ class signUp extends Controller
         ]);
 
         $newStudent->save();
+        Mail::to("gadahAlmuaikel@gmail.com")->send(new NewStudentRequest());
         return response()->json(['message' => 'Student added successfully'], 200);
     }
-
+    
     public function acceptStudent(Request $request ){
         $password=$this->generatePassword();
         $nameParts = explode(' ', $request->input('StudentName'));
@@ -95,6 +97,24 @@ class signUp extends Controller
 
 
     }
+    
+    public function reject($id){
+        $student = New_Student::where('id',$id )->first();
+
+        $data = [
+            'subject' => 'we are sorry!',
+            'firstName' => $student->firstName,
+            'lastName' => $student->lastName,
+            'fullName' => $student->firstName . ' ' . $student->lastName,
+            'email' => $student->email
+        ];
+    
+        Mail::to($student->email)->send(new rejectMail($data));
+        $this->delete($id);
+
+
+    }
+
     public function delete($id){
         $student = New_Student::where('id',$id )->first();
         $student ->delete();

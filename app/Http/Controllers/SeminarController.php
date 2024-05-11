@@ -171,6 +171,7 @@ class SeminarController extends Controller
             'location' => $validatedData['Location'],
             'type' => $validatedData['Type'],
         ]);
+        
         if ($seminar->type=='public'){
             $title= 'Title of Semiar: '.$validatedData['Title'] ;
             $event = new event_model([

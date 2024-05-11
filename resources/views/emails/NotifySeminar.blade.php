@@ -48,9 +48,9 @@
         </div>
         <div class="content">
             <p>Dear {{ $data['fullName'] }},</p>
-            <p >{{$data['password']}}</p>
-            <p class="warning">Please keep this password confidential and do not share it with anyone.</p>
-        <p>Best regards,</p>
+            <p>Your seminar is upcoming. Please make necessary arrangements and prepare accordingly.</p>
+            <p class="warning">Note: It is crucial to attend the seminar as scheduled.</p>
+            <p>Best regards,</p>
             <p>{{ config('app.name') }}</p>
         </div>
         <div class="footer">

@@ -5,8 +5,9 @@ namespace App\Console\Commands;
 use App\Models\Student;
 use App\Models\Enrollment;
 use App\Models\Seminars;
-use App\Notifications\SeminarNotification;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NotifySeminar;
 use Illuminate\Console\Command;
 
 class NotifyStudentForSeminar extends Command
@@ -22,7 +23,7 @@ class NotifyStudentForSeminar extends Command
 
         foreach ($students as $student) {
             $dissertationStartDate = Carbon::parse($student->thesisStartDate);
-            $hadSeminar = Seminars::where('student_id', $student->id)  
+            $hadSeminar = Seminars::where('userId', $student->id)
                                  ->where('date', '>=', $dissertationStartDate)
                                  ->exists();
 
@@ -46,9 +47,17 @@ class NotifyStudentForSeminar extends Command
                                  ->get();
 
         if ($enrollments->count() == 3 && $enrollments->last()->semester->isCurrent()) {
-            $student->notify(new SeminarNotification());
-            $this->info("Notified student: {$student->name} (Supervisor: {$student->supervisor})");
+            $data = [
+                'subject' => 'Your Seminar Is Upcoming!',
+                'firstName' => $student->firstName,
+                'lastName' => $student->lastName,
+                'fullName' => $student->firstName . ' ' . $student->lastName,
+                'email' => $student->email
+            ];
+
+            Mail::to($student->email)->send(new NotifySeminar($data));
         }
+        $this->info("Notified student: {$student->name} (Supervisor: {$student->supervisor})");
     }
 
     protected function checkEnrollmentsPostSeminar($student, $startDate)
@@ -68,11 +77,18 @@ class NotifyStudentForSeminar extends Command
                                      ->get();
 
             if ($enrollments->count() >= 3 && $enrollments[2]->semester->isCurrent()) {
-                $student->notify(new SeminarNotification());
-                $this->info("Notified student: {$student->name} (Supervisor: {$student->supervisor})");
+                $data = [
+                    'subject' => 'Your Seminar Is Upcoming!',
+                    'firstName' => $student->firstName,
+                    'lastName' => $student->lastName,
+                    'fullName' => $student->firstName . ' ' . $student->lastName,
+                    'email' => $student->email
+                ];
+
+                Mail::to($student->email)->send(new NotifySeminar($data));
             }
+
+            $this->info("Notified student: {$student->name} (Supervisor: {$student->supervisor})");
         }
     }
 }
-
-

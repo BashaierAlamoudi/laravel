@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Models\Publications;
 use App\Models\User;
 class PublicationController extends Controller
-
 {
     public function fetchData() {
         

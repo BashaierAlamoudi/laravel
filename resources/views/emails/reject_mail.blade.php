@@ -21,7 +21,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         .header {
-            background-color: #4CAF50; /* Green background */
+            background-color: #ff5722; /* Orange background */
             color: #fff;
             padding: 10px;
             text-align: center;
@@ -48,9 +48,10 @@
         </div>
         <div class="content">
             <p>Dear {{ $data['fullName'] }},</p>
-            <p >{{$data['password']}}</p>
-            <p class="warning">Please keep this password confidential and do not share it with anyone.</p>
-        <p>Best regards,</p>
+            <p>We regret to inform you that your seminar request has been rejected.</p>
+            <p> please contact your supervisior</p>
+
+            <p>Best regards,</p>
             <p>{{ config('app.name') }}</p>
         </div>
         <div class="footer">
@@ -59,4 +60,3 @@
     </div>
 </body>
 </html>
-

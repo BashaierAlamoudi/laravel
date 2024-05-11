@@ -10,6 +10,7 @@ use App\Models\Seminars;
 use App\Models\Semester;
 use App\Models\Publications;
 use Carbon\Carbon; 
+
 class ProgressDescriptionController extends Controller
 {
     public function fetchData()

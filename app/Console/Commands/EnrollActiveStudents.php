@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Students;
+use App\Models\Student;
 use App\Models\Semester;
 use App\Models\Enrollment;
 use Carbon\Carbon;
@@ -25,9 +25,10 @@ class EnrollActiveStudents extends Command
             return;
         }
 
-        $activeStudents = Students::where('status', 'active')->get();
+        $activeStudents = Student::where('status', 'active')->get();
         foreach ($activeStudents as $student) {
             Enrollment::firstOrCreate([
+                'status'=>'active',
                 'student_id' => $student->id,
                 'semester_id' => $semester->id,
             ]);
