@@ -76,9 +76,12 @@ class StudentController extends Controller {
     // If user is not found or data fetching fails, return error response
     return response()->json(['error' => 'User not found'], 404);
 }
-    public function fetchWithFilter(Request $request)
-    {
-        $query = DB::table('user')
+public function fetchWithFilter(Request $request)
+{
+    $currentYear = date('Y'); // Get the current year once and use it for comparison
+
+    // Starting the query by joining user with student on userId
+    $query = DB::table('user')
         ->join('student', 'user.id', '=', 'student.userId')
         ->select(
             'user.id',
@@ -87,45 +90,40 @@ class StudentController extends Controller {
             'user.lastName', 
             'user.department', 
             'user.email', 
-            'user.phone_number'
+            'user.phone_number',
+            'user.gender',  // Assuming gender is in the student table
+            'student.enrollYear',  // Assuming enrollYear is in the student table
+            'student.graduationDate'  // Assuming graduationDate is in the student table
         );
 
-// Apply filters only if they are present and not empty
-if ($request->filled('gender')) {
-$query->where('gender', $request->gender);
-}
-if ($request->filled('department')) {
-    $query->where('department', $request->department);
-}
-
-    // Start checking for either enroll year or expected graduation
-    if ($request->boolean('enrollYear')) {
-        $query->where(function ($query) use ($request) {
-            if ($request->boolean('enrollYear')) {
-                $query->orWhere('enrollYear', date('Y'));
-            }
-        });
+    // Applying filters
+    if ($request->filled('gender')) {
+        $query->where('student.gender', $request->gender); // Specify table if ambiguous
     }
-    /*
-       // Start checking for either enroll year or expected graduation
+    if ($request->filled('department')) {
+        $query->where('user.department', $request->department); // Specify table if ambiguous
+    }
+    if ($request->filled('status')) {
+        $query->where('student.status', $request->status); // Assuming status is in the student table
+    }
+
+    // Conditional filters based on boolean flags
     if ($request->boolean('enrollYear') || $request->boolean('graduationDate')) {
-        $query->where(function ($query) use ($request) {
+        $query->where(function ($query) use ($request, $currentYear) {
             if ($request->boolean('enrollYear')) {
-                $query->orWhere('enrollYear', date('Y'));
+                // Extract year from date field for comparison
+                $query->orWhere(DB::raw('YEAR(student.enrollYear)'), '=', $currentYear);
             }
             if ($request->boolean('graduationDate')) {
-                $query->orWhere('graduationDate',  date('Y'));
+                // Assuming graduationDate is also a date and you want to check the current year
+                $query->orWhere(DB::raw('YEAR(student.graduationDate)'), '=', $currentYear);
             }
         });
     }
-    */
 
-if ($request->filled('status')) {
-$query->where('status', $request->status);
+    // Return JSON response with query results
+    return response()->json($query->get());
 }
-
-return response()->json($query->get());
-    }
 
     public function getSupervisors($userId) {
         $user = User::find($userId);
@@ -194,7 +192,8 @@ public function updateUserdata(Request $request) {
                 'middleName' => $requestData['middleName'],
                 'lastName' => $requestData['lastName'],
                 'email' => $requestData['email'],
-                'phone_number' => $requestData['phone'], // assuming 'phone' is the correct key
+                'phone_number' => $requestData['phone'],
+                // assuming 'phone' is the correct key
             ]);
         }
 
@@ -203,7 +202,7 @@ public function updateUserdata(Request $request) {
         if ($student) {
             $student->update([
                 'thesisStartDate' => $requestData['dissertationStartYear'],
-                // other fields as needed ...
+                'field'=> $requestData['field'],
             ]);
         }
 
@@ -251,7 +250,9 @@ public function updateUserdata(Request $request) {
             'user.department',
             'user.email',
             'user.phone_number',
-         //   'student.graduationDate', // Assuming you want to fetch this from the student table
+           'student.graduationDate',
+            'student.withdrawSemester', 
+            'student.postponedSemester',// Assuming you want to fetch this from the student table
             'student.status',         // More fields from the student table
             'student.enrollYear',
             'student.gpa'

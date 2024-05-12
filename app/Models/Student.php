@@ -57,6 +57,13 @@ public function supervisors()
         return $this->belongsToMany(Supervisor::class, 'supervise', 'student_id', 'supervisor_id');
     }
 
+    public function initialExpectedGraduationYear($enrollDate) {
+        // Assuming a 4-year course duration
+        $date = new \DateTime($enrollDate);
+        $date->modify('+2 year');
+        return $date->format('Y-m-d'); // Returns the date in YYYY-MM-DD format
+    }
+    
 public function calculateExpectedGraduationYear()
 {
     // Assuming each academic year has 2 semesters.

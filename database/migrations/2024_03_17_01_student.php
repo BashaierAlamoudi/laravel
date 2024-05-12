@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->unsignedBigInteger('userId')->unique();
-            //$table->string('graduationDate'); 
-           //$table->integer('withdrawSemester'); 
-           //$table->integer('postponedSemester'); 
+            $table->string('graduationDate'); 
+           $table->integer('withdrawSemester'); 
+           $table->integer('postponedSemester'); 
             $table->string('status');
             $table->string('field');
             $table->string('enrollYear');

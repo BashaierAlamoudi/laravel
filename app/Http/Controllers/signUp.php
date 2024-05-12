@@ -10,8 +10,8 @@ use App\Mail\newStudent;
 use App\Mail\forgotPassword;
 use App\Mail\NewStudentRequest;
 use App\Mail\rejectMail;
-
-
+use Illuminate\Support\Facades\DB;
+use Exception;
 use Illuminate\Http\Request;
 
 class signUp extends Controller
@@ -61,41 +61,57 @@ class signUp extends Controller
         return response()->json(['message' => 'Student added successfully'], 200);
     }
     
-    public function acceptStudent(Request $request ){
-        $password=$this->generatePassword();
-        $nameParts = explode(' ', $request->input('StudentName'));
-
-        $firstName = $nameParts[0] ?? '';
-        $middleName = implode(' ', array_slice($nameParts, 1, -1)) ?? ''; // Join middle names with spaces
-        $lastName = end($nameParts) ?? '';
-        $newUser = new User([
-            'loginId'=>$request['loginId'],
-            'password'=>$password,
-            'firstName'=>$firstName,
-            'middleName'=>$middleName,
-            'lastName'=>$lastName,
-            'phone_number'=>$request['phone_number'],
-            'email'=>$request['email'],
-            'department'=>$request['department'],
-            'gender'=>$request['section'],
-            'role'=>'student',
-            'nationalId'=>$request['nationalId']
-        ]);
-        $newUser-> save();
-        $newStudent = new Student([
-            'userId'=>$newUser['id'],
-            'enrollYear'=>$request['YearEnroll'],
-            'gpa'=>$request['gpa'],
-            'status'=>'active',
-            'field'=>'', 	
-        
-        ]);
-        $newStudent->save();
-        $this->sendMail($newUser->id);
-        $this->delete($request->id);
-
-
-
+    public function acceptStudent(Request $request){
+        DB::beginTransaction();
+        try {
+            $password = $this->generatePassword();
+            $nameParts = explode(' ', $request->input('StudentName'));
+    
+            $firstName = $nameParts[0] ?? '';
+            $middleName = implode(' ', array_slice($nameParts, 1, -1)) ?? '';
+            $lastName = end($nameParts) ?? '';
+    
+            $newUser = new User([
+                'loginId' => $request['loginId'],
+                'password' => $password,
+                'firstName' => $firstName,
+                'middleName' => $middleName,
+                'lastName' => $lastName,
+                'phone_number' => $request['phone_number'],
+                'email' => $request['email'],
+                'department' => $request['department'],
+                'gender' => $request['section'],
+                'role' => 'student',
+                'nationalId' => $request['nationalId']
+            ]);
+            $newUser->save();
+    
+            $enrollDate = $request['YearEnroll']; // Ensure this input is in 'YYYY-MM-DD' format
+            $expectedGraduationDate = (new Student)->initialExpectedGraduationYear($enrollDate);
+    
+            $newStudent = new Student([
+                'userId' => $newUser->id,
+                'enrollYear' => $enrollDate,
+                'gpa' => $request['gpa'],
+                'field' => '',
+                'status' => 'active',
+                'withdrawSemester' => 0,
+                'postponedSemester' => 0,
+                'expectedGraduationYear' => $expectedGraduationDate
+            ]);
+            $newStudent->save();
+    
+            // Additional methods like sendMail, delete, etc.
+            $this->sendMail($newUser->id);
+            $this->delete($request->id);
+    
+            DB::commit(); // Commit the transaction if all is well
+            return response()->json(['success' => 'Student accepted successfully'], 200);
+        } catch (Exception $e) {
+            DB::rollBack(); // Roll back the transaction on error
+            // Log the error or handle it as needed
+            return response()->json(['error' => 'Failed to accept student: ' . $e->getMessage()], 500);
+        }
     }
     
     public function reject($id){
